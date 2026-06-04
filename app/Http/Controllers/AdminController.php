@@ -11,12 +11,17 @@ class AdminController extends Controller
     {
         $doctor = User::findOrFail($id);
 
-        if (!$doctor){
+        if (!$doctor) {
             return response()->json(['message' => 'User Not Found'], 404);
         }
         if ($doctor->role !== 'doctor') {
             return response()->json([
                 'message' => 'This user is not a doctor.'
+            ], 400);
+        }
+        if (!$doctor->is_verified) {
+            return response()->json([
+                'message' => 'Doctor account is not verified yet.'
             ], 400);
         }
 
@@ -36,7 +41,11 @@ class AdminController extends Controller
                 'message' => 'This user is not a doctor.'
             ], 400);
         }
-
+        if (!$doctor->is_verified) {
+            return response()->json([
+                'message' => 'Doctor account is not verified yet.'
+            ], 400);
+        }
         $doctor->status = 'rejected';
         $doctor->save();
 
@@ -83,7 +92,7 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function deleteUser($id ,Request $request)
+    public function deleteUser($id, Request $request)
     {
         $user = User::find($id);
         if (!$user) {

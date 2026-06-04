@@ -21,6 +21,7 @@ Route::post('/logout', [UserController::class, 'logout'])->middleware('auth:sanc
 Route::post('/verifyotp', [AuthController::class, 'verifyOtp']);
 Route::post('/forgotpassword', [AuthController::class, 'forgotPassword']);
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
+Route::post('/resendotp', [AuthController::class, 'resendOtp']);
 
 
 Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
