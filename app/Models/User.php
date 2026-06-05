@@ -52,4 +52,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Patient::class);
     }
+
+    //many to many
+    public function favoriteDoctors(){
+        return $this->belongsToMany(Doctor::class,'favorites');
+    }
 }

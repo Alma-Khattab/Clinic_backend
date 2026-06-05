@@ -18,6 +18,12 @@ class DoctorController extends Controller
         if (!$user) {
             return response()->json(['error' => 'User not authenticated'], 401);
         }
+
+        if ($user->role !== 'doctor') {
+            return response()->json([
+                'message' => 'Only doctors can create a doctor profile.'
+            ], 403);
+        }
         $user_id = $user->id;
         $existingProfile = Doctor::where('user_id', $user_id)->first();
 

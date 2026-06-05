@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\CheckAdmin;
@@ -45,6 +46,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('/favorites')->group(function () {
+        Route::post('/add/{doctorId}', [FavoriteController::class, 'addToFavorite']);
+        Route::delete('/remove/{doctorId}', [FavoriteController::class, 'removeFromFavorite']);
+        Route::get('getdoctors', [FavoriteController::class, 'getAllFavorites']);
+    });
+});
 
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -16,4 +16,9 @@ class Doctor extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function favoritedByPatients()
+    {
+        return $this->belongsToMany(User::class,'favorites');
+    }
 }
