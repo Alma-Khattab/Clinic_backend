@@ -1,0 +1,1025 @@
+{
+  "info": {
+    "_postman_id": "0b4f6216-deb7-4542-9c9b-990f5ff9846f",
+    "name": "Clinic Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "45245498"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "full_name",
+              "value": "marwa",
+              "type": "text",
+              "uuid": "190d19e7-1311-4c45-89c6-2a8959b9c3fa"
+            },
+            {
+              "key": "email",
+              "value": "saddenmarwa@gmail.com",
+              "type": "text",
+              "uuid": "bb13eed2-a541-4f1c-88b7-6eeee6b22bcd"
+            },
+            {
+              "key": "password",
+              "value": "12345678",
+              "type": "text",
+              "uuid": "d60707c9-b6bf-4e8e-b1b4-4e8e6b73d6ad"
+            },
+            {
+              "key": "password_confirmation",
+              "value": "12345678",
+              "type": "text",
+              "uuid": "653f2221-37ab-48de-b25b-5a26480f1c9e"
+            },
+            {
+              "key": "date_of_birth",
+              "value": "2006-1-9",
+              "type": "text",
+              "uuid": "c6dda518-bac5-4e13-b48b-8e4a6353d592"
+            },
+            {
+              "key": "role",
+              "value": "doctor",
+              "type": "text",
+              "uuid": "261d29a7-2596-4cd8-a28c-3d503ad67f30"
+            },
+            {
+              "key": "gender",
+              "value": "female",
+              "type": "text",
+              "uuid": "b2a6dc6e-fc5c-44ff-8b8f-3f046f431c5c"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/register",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "saddenmarwa@gmail.com",
+              "type": "text",
+              "uuid": "13e5d5f2-5c6c-4217-b9d5-3b5df8524e87"
+            },
+            {
+              "key": "password",
+              "value": "11111111",
+              "type": "text",
+              "uuid": "d60707c9-b6bf-4e8e-b1b4-4e8e6b73d6ad"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/login",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Admin Approval",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "1|lbk9JMomypyY8TgYzpwMBhPuSy2MCXjnYvluyoRe3bdf3f32",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "",
+            "value": "",
+            "type": "text",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/doctor/approve/2",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "doctor",
+            "approve",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Admin Rejection",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "2|dZfSWG185T7RPxZHxh0rCZhNoYFPR8MjheEsq13p8c72dde3",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/doctor/reject/5",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "doctor",
+            "reject",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|d1ZXtsrvgrAhOILyeCp9rIm1ppzmIMLC4rXPMoJQf19cc732",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/logout",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "logout"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "forget Password",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "saddenmarwa@gmail.com",
+              "type": "text",
+              "uuid": "9c7d3d58-8069-4d94-ab8c-61050f130e2e"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/forgotpassword",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "forgotpassword"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "verify-OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "saddenmarwa@gmail.com",
+              "type": "text",
+              "uuid": "abdab21b-91a8-4353-b670-53a4f9a8ff5f"
+            },
+            {
+              "key": "otp",
+              "value": "8914",
+              "type": "text",
+              "uuid": "64714d39-b4b9-49e2-865f-697de4b5a21d"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/verifyotp",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "verifyotp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "storeDoctorProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|d1ZXtsrvgrAhOILyeCp9rIm1ppzmIMLC4rXPMoJQf19cc732",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "personal_image",
+              "type": "file",
+              "uuid": "6dbd1860-282d-4ff7-b563-61cac1a384cd",
+              "src": "/C:/Users/DELL/Pictures/q.jpg"
+            },
+            {
+              "key": "document_image",
+              "type": "file",
+              "uuid": "217c950f-1605-4e9f-a97b-1766bf780448",
+              "src": "/C:/Users/DELL/Pictures/q.jpg"
+            },
+            {
+              "key": "doctor_specialization",
+              "value": "Cardiology",
+              "type": "text",
+              "uuid": "4d1341ec-0553-42f3-978d-953150fea0b2"
+            },
+            {
+              "key": "working_days[0]",
+              "value": "Sunday",
+              "type": "text",
+              "uuid": "d2ce588e-07e9-4899-bf5f-823dae0fcd7b"
+            },
+            {
+              "key": "bio",
+              "value": "hi i am marwa",
+              "type": "text",
+              "uuid": "278e2777-7214-47be-83dc-16002083116b"
+            },
+            {
+              "key": "years_of_experience",
+              "value": "4",
+              "type": "text",
+              "uuid": "0f704a56-23d0-43e2-88ce-a61a32002240"
+            },
+            {
+              "key": "working_days[1]",
+              "value": "Monday",
+              "type": "text",
+              "uuid": "88eb3a06-7be8-4f53-adba-9aaa3c8dcfe0"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/doctor/store",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "doctor",
+            "store"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updateDoctorProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|d1ZXtsrvgrAhOILyeCp9rIm1ppzmIMLC4rXPMoJQf19cc732",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "bio",
+              "value": "hiiiiiiiiiii",
+              "type": "text",
+              "uuid": "80e47259-4b55-4322-a9c0-d88766c758bd"
+            },
+            {
+              "key": "years_of_experience",
+              "value": "9",
+              "type": "text",
+              "uuid": "62e12a0c-ca7a-4bb4-a489-3df5b359acec"
+            },
+            {
+              "key": "_method",
+              "value": "PUT",
+              "type": "text",
+              "uuid": "3597f7fd-afe0-407a-b679-e7296993eb0b"
+            },
+            {
+              "key": "working_days[0]",
+              "value": "Sunday",
+              "type": "text",
+              "uuid": "819d65a4-4f83-4c5e-9580-40c8290e582b"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/doctor/update/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "doctor",
+            "update",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getDoctorProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|d1ZXtsrvgrAhOILyeCp9rIm1ppzmIMLC4rXPMoJQf19cc732",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/doctor/get/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "doctor",
+            "get",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deleteDoctorProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|d1ZXtsrvgrAhOILyeCp9rIm1ppzmIMLC4rXPMoJQf19cc732",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/doctor/delete/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "doctor",
+            "delete",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getAllDoctors",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "4|RZy0FbFuTc4RR07lhciBdbSaOW6hfVEK6CHc9klV7a17ba61",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/alldoctors",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "alldoctors"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getAllPatient",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "4|RZy0FbFuTc4RR07lhciBdbSaOW6hfVEK6CHc9klV7a17ba61",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/allpatients",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "allpatients"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getAllUsers",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "4|RZy0FbFuTc4RR07lhciBdbSaOW6hfVEK6CHc9klV7a17ba61",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/allusers",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "allusers"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getUser",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "4|RZy0FbFuTc4RR07lhciBdbSaOW6hfVEK6CHc9klV7a17ba61",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/user/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "user",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "resetPassword",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "saddenmarwa@gmail.com",
+              "type": "text",
+              "uuid": "af67b145-2bb6-441d-a9c0-9b2dd69ba7d0"
+            },
+            {
+              "key": "password",
+              "value": "11111111",
+              "type": "text",
+              "uuid": "678a18a0-addd-4311-99ff-7948b969c590"
+            },
+            {
+              "key": "otp",
+              "value": "2574",
+              "type": "text",
+              "uuid": "53866219-b321-4d38-b542-4096bc5fc0c5"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/resetpassword",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "resetpassword"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deleteUser",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|56PvBQvQ6CPCU5ttbPUHwkxLEHhpgPLVYt9e55uK3c551c38",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/deleteuser/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "deleteuser",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "resendotp",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "email",
+              "value": "saddenmarwa@gmail.com",
+              "type": "text",
+              "uuid": "9c7d3d58-8069-4d94-ab8c-61050f130e2e"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/resendotp",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "resendotp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "addToFavorite",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "8|1fNNsCROXPKhqRWXE1mrQdA9eKSJGi9EgmItphMP0129a365",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/favorites/add/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "favorites",
+            "add",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "removeFromFavorite",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "9|NLgKegWc9GSVEYa9DFrm7povGjfjKLsJALklX0Scf60641fe",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/favorites/remove/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "favorites",
+            "remove",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getDoctorsFromFavorite",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "12|xlNR1Q79pNZYJPiuPdb14vYKBeD6qqBay2w5f3r947a40d73",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/favorites/getdoctors",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "favorites",
+            "getdoctors"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
