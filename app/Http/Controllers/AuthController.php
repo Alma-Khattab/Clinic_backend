@@ -83,6 +83,9 @@ class AuthController extends Controller
         if (!$user || $user->otp != $request->otp || $user->otp_type !== 'reset_password') {
             return response()->json(['message' => 'Invalid OTP'], 400);
         }
+        if (now()->gt($user->otp_expires_at)) {
+            return response()->json(['message' => 'OTP expired'], 400);
+        }
 
         $user->update([
             'password' => Hash::make($request->password),
