@@ -129,18 +129,26 @@ class DoctorController extends Controller
 }
 
 public function getDoctorProfileForBooking($id)
-{
-    $doctor = Doctor::find($id);
-
-    if (!$doctor) {
+    {
+        $doctor = Doctor::find($id);
+        if (!$doctor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The doctor is not found'
+            ], 404);
+        }
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+        if ($user->role !== 'patient') {
+            return response()->json([
+                'message' => "Only patients have the authorization."
+            ], 403);
+        }
         return response()->json([
-            'success' => false,
-            'message' => 'The doctor is not available'
-        ], 404);
+            'success' => true,
+            'doctor_profile' => $doctor
+        ], 200);
     }
-    return response()->json([
-        'success' => true,
-        'doctor_profile' => $doctor
-    ], 200);
-}
 }

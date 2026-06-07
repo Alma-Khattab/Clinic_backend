@@ -107,10 +107,15 @@ class AdminController extends Controller
     $validated = $request->validate([
         'shift_id'       => 'required|exists:shifts,id',
         'working_days'   => 'required|array|min:1',
-        'working_days.*' => 'string|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'
+        'working_days.*' => 'string|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Saturday'
     ]);
 
     $user = User::findOrFail($id);
+    if ($user->role !== 'doctor') {
+                return response()->json([
+                    'message' => 'Only doctors can create a doctor profile.'
+                ], 403);
+            }
 
     $doctor = Doctor::updateOrCreate(
         ['user_id' => $user->id],

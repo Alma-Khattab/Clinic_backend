@@ -71,6 +71,17 @@ class AppointmentController extends Controller
         $shiftStart  = Carbon::parse($doctor->shift->start_time);
         $shiftEnd    = Carbon::parse($doctor->shift->end_time);
 
+
+        $minutesDifference = $shiftStart->diffInMinutes($bookingTime);
+
+
+        if ($minutesDifference % 30 !== 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "Invalid appointment time. Appointments must be booked in 30-minute intervals."
+            ], 422);
+        }
+
         if ($bookingTime->lt($shiftStart) || $bookingTime->gte($shiftEnd)) {
             return response()->json([
                 'success' => false,
