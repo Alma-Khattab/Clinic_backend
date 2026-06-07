@@ -42,20 +42,6 @@ class DoctorController extends Controller
         'profile' => $doctor
     ], 200);
 }
-    public function getProfile($id)
-    {
-        $user_id = Auth::user()->id;
-        $profile = Doctor::find($id);
-        if (!$profile) {
-            return response()->json(['message' => 'Profile Not Found'], 404);
-        }
-        if ($profile->user_id != $user_id) {
-            return response()->json(["massege" => 'unauthaurize'], 403);
-        }
-        return response()->json([
-            'profile' => $profile
-        ], 200);
-    }
 
     public function updateProfile(UpdateDoctorProfileRequest $request, $id)
     {
@@ -111,9 +97,6 @@ class DoctorController extends Controller
     }
 
 
-
-    //////////////////////////////////////////////////////////////Booking
-
     public function getDoctorsBySpecialization($specialization)
 {
     $doctors = Doctor::where('doctor_specialization', $specialization)->get();
@@ -141,11 +124,12 @@ public function getDoctorProfileForBooking($id)
         if (!$user) {
             return response()->json(['error' => 'User not authenticated'], 401);
         }
-        if ($user->role !== 'patient') {
-            return response()->json([
-                'message' => "Only patients have the authorization."
-            ], 403);
-        }
+        if ($user->role !== 'patient' && $doctor->user_id != $user->id) {
+        return response()->json([
+            'success' => false,
+            'message' => "You do not have the authorization to view this profile."
+        ], 403);
+    }
         return response()->json([
             'success' => true,
             'doctor_profile' => $doctor
