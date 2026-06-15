@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('job');
             $table->boolean('smoker')->default(false);
             $table->string('marital_status');
+            $table->unsignedInteger('missed_appointments_count')->default(0);
             $table->softDeletes(); // تفعيل الحذف الناعم للأمان الطبي
             $table->timestamps();
         });

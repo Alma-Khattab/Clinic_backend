@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Doctor extends Model
 {
 
-    protected $fillable = ['user_id','shift_id', 'personal_image', 'document_image', 'doctor_specialization', 'working_days', 'bio', 'years_of_experience'];
+    protected $fillable = ['user_id','shift_id', 'personal_image', 'document_image', 'doctor_specialization', 'working_days', 'bio', 'years_of_experience','phone_number'];
     protected $casts = [
         'working_days' => 'array',
     ];
@@ -25,5 +25,9 @@ class Doctor extends Model
     public function shift()
     {
         return $this->belongsTo(Shift::class);
+    }
+
+    public function MedicalRecords(){
+        return $this->hasMany(MedicalRecord::class);
     }
 }

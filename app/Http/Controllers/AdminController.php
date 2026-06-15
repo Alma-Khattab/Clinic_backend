@@ -113,7 +113,7 @@ class AdminController extends Controller
     $user = User::findOrFail($id);
     if ($user->role !== 'doctor') {
                 return response()->json([
-                    'message' => 'Only doctors can create a doctor profile.'
+                    'message' => 'Assign shifts only to doctors.'
                 ], 403);
             }
 

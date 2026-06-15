@@ -11,4 +11,12 @@ class Patient extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function appointments(){
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function medicalRecord()
+{
+    return $this->hasMany(MedicalRecord::class, 'patient_id', 'user_id');
+}
 }

@@ -25,6 +25,7 @@ class UpdateDoctorProfileRequest extends FormRequest
             'personal_image' =>"sometimes|image|mimes:png,jpg,jpeg,gif|max:2048",
             'bio'=>'sometimes|max:255',
             'years_of_experience'=>'sometimes|integer|max:255',
-                    ];
+            'phone_number' => 'sometimes|string|max:15'
+            ];
     }
 }

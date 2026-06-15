@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\DoctorRequest;
 use App\Http\Requests\UpdateDoctorProfileRequest;
 use App\Models\Doctor;
+use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -95,7 +96,54 @@ class DoctorController extends Controller
             );
         }
     }
+    public function getDoctorProfile($id)
+    {
+        if (auth()->id() != $id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Access denied. You can only view your own profile.'
+        ], 403);
+    }
+        $user = User::where('id', $id)
+            ->where('role', 'doctor')
+            ->first();
 
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Doctor user account not found.'
+            ], 404);
+        }
+
+        $doctorProfile = Doctor::where('user_id', $user->id)->first();
+        if (!$doctorProfile) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This doctor has an account but has not completed their profile details yet.',
+                'user_info' => [
+                    'user_id'   => $user->id,
+                    'full_name' => $user->full_name,
+                    'email'     => $user->email,
+                ]
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => true,
+            'profile' => [
+                'user_id'        => $user->id,
+                'full_name'      => $user->full_name,
+                'email'          => $user->email,
+                'phone_number'     => $doctorProfile->phone_number,
+                'doctor_specialization' => $doctorProfile->doctor_specialization,
+                'working_days'   => $doctorProfile->working_days,
+                'personal_image' =>$doctorProfile->personal_image,
+                'document_image' => $doctorProfile->document_image,
+                'bio'=>$doctorProfile->bio,
+                'years_of_experience'=>$doctorProfile->years_of_experience,
+            ]
+        ], 200);
+    }
 
     public function getDoctorsBySpecialization($specialization)
 {
@@ -109,30 +157,59 @@ class DoctorController extends Controller
         'success' => true,
         'doctors' => $doctors
     ], 200);
-}
+    }
 
-public function getDoctorProfileForBooking($id)
-    {
-        $doctor = Doctor::find($id);
-        if (!$doctor) {
-            return response()->json([
-                'success' => false,
-                'message' => 'The doctor is not found'
-            ], 404);
-        }
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated'], 401);
-        }
-        if ($user->role !== 'patient' && $doctor->user_id != $user->id) {
+    public function getDoctorProfileForBooking($id)
+{
+    $doctor = Doctor::with(['user', 'shift'])->find($id);
+
+    if (!$doctor) {
+        return response()->json([
+            'success' => false,
+            'message' => 'The doctor is not found'
+        ], 404);
+    }
+
+    $user = Auth::user();
+    if (!$user) {
+        return response()->json(['error' => 'User not authenticated'], 401);
+    }
+
+    if ($user->role !== 'patient' && $doctor->user_id != $user->id) {
         return response()->json([
             'success' => false,
             'message' => "You do not have the authorization to view this profile."
         ], 403);
     }
-        return response()->json([
-            'success' => true,
-            'doctor_profile' => $doctor
-        ], 200);
+
+    $shiftName = $doctor->shift ? ($doctor->shift->name === 'Morning' ? 'Morning' : 'Evening') : 'Un limited';
+
+    return response()->json([
+        'success' => true,
+        'doctor_profile' => [
+            'doctor_id'             => $doctor->id,
+            'full_name'             => $doctor->user ? $doctor->user->full_name : 'Unknown Doctor',
+            'doctor_specialization' => $doctor->doctor_specialization,
+            'working_days'          => $doctor->working_days,
+            'shift'                 => $shiftName,
+            'personal_image'        => $doctor->personal_image ? asset('storage/' . $doctor->personal_image) : null,
+            'bio'                   => $doctor->bio,
+            'years_of_experience'   => $doctor->years_of_experience,
+        ]
+    ], 200);
+}
+
+    public function getRandomDoctors()
+    {
+    $randomDoctors = Doctor::with('user')
+                            ->inRandomOrder()
+                            ->limit(5)
+                            ->get();
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Doctors retrieved successfully',
+        'data' => $randomDoctors
+    ], 200);
     }
 }

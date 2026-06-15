@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
@@ -40,19 +41,26 @@ Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('/profile/doctor')->group(function () {
+        Route::get('/random', [DoctorController::class, 'getRandomDoctors']);
         Route::post('/store', [DoctorController::class, 'storeProfile']);
-        Route::get('/get/{id}',[DoctorController::class,'getProfile']);
         Route::put('/update/{id}',[DoctorController::class,'updateProfile']);
         Route::delete('/delete/{id}',[DoctorController::class,'destroyProfile']);
+        Route::get('/get/{id}', [DoctorController::class, 'getDoctorProfile']);
     });
+    Route::get('/doctors/specialization/{specialization}', [DoctorController::class, 'getDoctorsBySpecialization']);
+    Route::get('/doctors/profile/{id}', [DoctorController::class, 'getDoctorProfileForBooking']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/doctors/specialization/{specialization}', [DoctorController::class, 'getDoctorsBySpecialization']);
-    Route::get('/doctors/profile/{id}', [DoctorController::class, 'getDoctorProfileForBooking']);
     Route::post('/appointments' ,[AppointmentController::class , 'book']);
     Route::get('/appointments/available-slots/{id}/{date}' ,[AppointmentController::class , 'getAvailableSlots']);
+    Route::put('/appointments/no-show/{appointment_id}', [AppointmentController::class, 'markAsNoShow']);
+    Route::get('/doctor/appointments/history', [AppointmentController::class, 'getDoctorAppointmentHistory']);
+    Route::get('/doctor/appointments/day/{date}', [AppointmentController::class, 'getDoctorAppointmentsByDate']);
+    Route::put('/appointments/complete/{id}', [AppointmentController::class, 'completeAppointment']);
+    Route::put('/appointments/cancel/{id}', [AppointmentController::class, 'cancelAppointment']);
 });
+
 
 
 
@@ -63,6 +71,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/update/{id}' , [PatientController::class , 'updateProfile']);
         Route::delete('/delete/{id}',[PatientController::class,'destroyProfile']);
     });
+
+    Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/medical-record', [MedicalRecordController::class, 'store']);
+    Route::put('/medical-record/{appointment_id}', [MedicalRecordController::class, 'update']);
+    Route::get('/medical-record/{appointment_id}', [MedicalRecordController::class, 'show']);
+    Route::get('/medical-records/patient/{patient_id}', [MedicalRecordController::class, 'getPatientHistory']);
+    Route::get('/medical-records/doctor/{doctor_id}', [MedicalRecordController::class, 'getDoctorMedicalRecords']);
+
+
+});
 });
 
 

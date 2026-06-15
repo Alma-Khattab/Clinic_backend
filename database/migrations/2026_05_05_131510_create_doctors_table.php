@@ -23,6 +23,7 @@ return new class extends Migration
             $table->json('working_days')->nullable();
             $table->text('bio')->nullable();
             $table->integer('years_of_experience')->nullable();
+            $table->string('phone_number')->nullable()->unique();
             $table->timestamps();
         });
 

@@ -27,6 +27,7 @@ class DoctorRequest extends FormRequest
             'doctor_specialization'=>'required|in:Cardiology,Ophthalmology,Dentistry,Pulmonology,Pediatrics,Gastroenterology,Neurology,General Surgery,Cosmetic Surgery',
             'bio'=>'required|max:255',
             'years_of_experience'=>'required|integer|max:255',
+            'phone_number' => 'required|string|max:15'
         ];
     }
 }
