@@ -192,7 +192,7 @@ class DoctorController extends Controller
             'doctor_specialization' => $doctor->doctor_specialization,
             'working_days'          => $doctor->working_days,
             'shift'                 => $shiftName,
-            'personal_image'        => $doctor->personal_image ? asset('storage/' . $doctor->personal_image) : null,
+            'personal_image'        => $doctor->personal_image ,
             'bio'                   => $doctor->bio,
             'years_of_experience'   => $doctor->years_of_experience,
         ]
