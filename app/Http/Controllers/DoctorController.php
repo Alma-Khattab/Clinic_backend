@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DoctorRequest;
 use App\Http\Requests\UpdateDoctorProfileRequest;
+use App\Models\Appointment;
 use App\Models\Doctor;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -212,4 +214,42 @@ class DoctorController extends Controller
         'data' => $randomDoctors
     ], 200);
     }
+
+    public function getDoctorUpcomingAppointments(Request $request, $date = null)
+{
+    $doctor = auth()->user()->doctor;
+
+    if (!$doctor) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized or Doctor profile not found.'
+        ], 403);
+    }
+
+    if (!$date) {
+        $date = Carbon::today()->toDateString();
+    }
+
+    $baseQuery = Appointment::where('doctor_id', $doctor->id)
+                            ->where('appointment_date', $date);
+
+
+    $totalPatientsToday = (clone $baseQuery)->count();
+
+    $remainingCount = (clone $baseQuery)->where('status', 'booked')->count();
+
+    $completedCount = (clone $baseQuery)->where('status', 'completed')->count();
+
+
+    return response()->json([
+        'success' => true,
+        'date' => $date,
+        'statistics' => [
+            'patients_today' => $totalPatientsToday,
+            'remaining' => $remainingCount,
+            'completed' => $completedCount
+        ]
+    ], 200);
 }
+}
+
