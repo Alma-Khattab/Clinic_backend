@@ -12,9 +12,11 @@ use Illuminate\Support\Facades\Auth;
 
 class DoctorController extends Controller
 {
+
     public function storeProfile(DoctorRequest $request)
     {
         $user = Auth::user();
+
         if (!$user) {
             return response()->json(['error' => 'User not authenticated'], 401);
         }
@@ -25,41 +27,25 @@ class DoctorController extends Controller
             ], 403);
         }
         $user_id = $user->id;
-        $existingProfile = Doctor::where('user_id', $user_id)->first();
-
-        if ($existingProfile) {
-            return response()->json([
-                'message' => 'Doctor profile already exists'
-            ], 400);
-        }
-
         $validateData = $request->validated();
-        $validateData['user_id'] = $user_id;
-        if ($request->hasFile('personal_image') && $request->hasFile('document_image')) {
-            $path1 = $request->file('personal_image')->store('personal_image', 'public');
-            $path2 = $request->file('document_image')->store('document_image', 'public');
-            $validateData['personal_image'] = $path1;
-            $validateData['document_image'] = $path2;
-        }
-        $profile = Doctor::create($validateData);
-        return response()->json([
-            'massege' => "successfully created profile",
-            'profile' => $profile
-        ], 201);
-    }
 
-    public function getProfile($id)
-    {
-        $user_id = Auth::user()->id;
-        $profile = Doctor::find($id);
-        if (!$profile) {
-            return response()->json(['message' => 'Profile Not Found'], 404);
+        if ($request->hasFile('personal_image') && $request->hasFile('document_image')) {
+            $validateData['personal_image'] = $request->file('personal_image')->store('personal_image', 'public');
+            $validateData['document_image'] = $request->file('document_image')->store('document_image', 'public');
         }
-        if ($profile->user_id != $user_id) {
-            return response()->json(["massege" => 'unauthaurize'], 403);
+
+        $doctor = Doctor::where('user_id', $user_id)->first();
+
+        if ($doctor) {
+            $doctor->update($validateData);
+        } else {
+            $validateData['user_id'] = $user_id;
+            $doctor = Doctor::create($validateData);
         }
+
         return response()->json([
-            'profile' => $profile
+            'message' => 'Successfully updated profile',
+            'profile' => $doctor
         ], 200);
     }
 
@@ -114,5 +100,60 @@ class DoctorController extends Controller
                 404
             );
         }
+    }
+
+    public function getDoctorsBySpecialization($specialization)
+    {
+        $doctors = Doctor::where('doctor_specialization', $specialization)->get();
+
+        if ($doctors->isEmpty()) {
+            return response()->json(['message' => 'There are currently no doctors in this specialty.'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'doctors' => $doctors
+        ], 200);
+    }
+
+    public function searchDoctors(Request $request)
+    {
+        $request->validate([
+            'search' => 'required|string'
+        ]);
+
+        $doctors = Doctor::whereHas('user', function ($query) use ($request) {
+            $query->where('full_name', 'like', '%' . $request->search . '%');
+        })->get();
+
+        return response()->json([
+            'success' => true,
+            'doctors' => $doctors
+        ]);
+    }
+
+    public function getDoctorProfileForBooking($id)
+    {
+        $doctor = Doctor::find($id);
+        if (!$doctor) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The doctor is not found'
+            ], 404);
+        }
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['error' => 'User not authenticated'], 401);
+        }
+        if ($user->role !== 'patient' && $doctor->user_id != $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => "You do not have the authorization to view this profile."
+            ], 403);
+        }
+        return response()->json([
+            'success' => true,
+            'doctor_profile' => $doctor
+        ], 200);
     }
 }

@@ -13,8 +13,20 @@ return new class extends Migration
     {
         Schema::create('patients', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users');
-            $table->string('personal_image');
+            $table->foreignId('user_id')->constrained('users')->unique();
+            $table->string('personal_image')->nullable();
+            $table->string('address');
+            $table->string('blood_type');
+            $table->text('drug_allergies')->nullable();
+            $table->text('chronic_diseases')->nullable();
+            $table->text('previous_operations')->nullable();
+            $table->text('current_medicines')->nullable();
+            $table->unsignedSmallInteger('height');
+            $table->float('weight')->unsigned();
+            $table->string('job');
+            $table->boolean('smoker')->default(false);
+            $table->string('marital_status');
+            $table->softDeletes(); // تفعيل الحذف الناعم للأمان الطبي
             $table->timestamps();
         });
     }

@@ -23,6 +23,17 @@ class PatientRequest extends FormRequest
     {
         return [
             'personal_image' =>"sometimes|image|mimes:png,jpg,jpeg,gif|max:2048",
+            'address'=>'required|string|max:255',
+            'blood_type'=>'required|string',
+            'drug_allergies' => 'sometimes|nullable|string',
+            'chronic_diseases' => 'sometimes|nullable|string',
+            'previous_operations' => 'sometimes|nullable|string',
+            'current_medicines' => 'sometimes|nullable|string',
+            'height'=>'required|integer',
+            'weight'=>'required|numeric',
+            'job'=>'required|string',
+            'smoker' => 'sometimes|boolean',
+            'marital_status'=>'required|string'
         ];
     }
 }

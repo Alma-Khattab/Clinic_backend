@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->hasOne(Patient::class);
     }
 
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class, 'user_id');
+    }
+
     //many to many
     public function favoriteDoctors(){
         return $this->belongsToMany(Doctor::class,'favorites');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -107,5 +108,33 @@ class AdminController extends Controller
 
         $user->delete();
         return response()->json('User deleted successfully', 200);
+    }
+    public function assignShiftAndDays(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'shift_id'       => 'required|exists:shifts,id',
+            'working_days'   => 'required|array|min:1',
+            'working_days.*' => 'string|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Saturday'
+        ]);
+
+        $user = User::findOrFail($id);
+
+        if ($user->role !== 'doctor') {
+            return response()->json([
+                'message' => 'Assign shifts only to doctors'
+            ], 403);
+        }
+        $doctor = Doctor::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'shift_id'     => $validated['shift_id'],
+                'working_days' => $validated['working_days'],
+            ]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'The shift and working days have been successfully added.'
+        ], 200);
     }
 }

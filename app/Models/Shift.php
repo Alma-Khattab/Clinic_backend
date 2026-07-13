@@ -4,13 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Patient extends Model
+class Shift extends Model
 {
     protected $guarded =[];
 
-    public function user()
+    public function doctors()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Doctor::class);
     }
-
 }

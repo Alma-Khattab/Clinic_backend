@@ -93,4 +93,21 @@ class UserController extends Controller
             'massege' => 'logout successfully'
         ], 200);
     }
+
+    public function saveFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required'
+        ]);
+
+        $user = Auth::user();
+        /** @var \App\Models\User $user */
+        $user->update([
+            'fcm_token' => $request->fcm_token
+        ]);
+
+        return response()->json([
+            'message' => 'Token saved successfully'
+        ]);
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class DoctorRequest extends FormRequest
+class StoreFeedbackRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,9 @@ class DoctorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'personal_image' =>"required|image|mimes:png,jpg,jpeg,gif|max:2048",
-            'document_image'=>'required|image|mimes:png,jpg,jpeg,gif|max:2048',
-            'doctor_specialization'=>'required|in:Cardiology,Ophthalmology,Dentistry,Pulmonology,Pediatrics,Gastroenterology,Neurology,General Surgery,Cosmetic Surgery',
-            'bio'=>'required|max:255',
-            'years_of_experience'=>'required|integer|max:255'
+            'appointment_id' => 'required|exists:appointments,id',
+            'comment'        => 'required|string|min:5|max:1000',
+            'is_anonymous'   => 'required|boolean', // 1 لإخفاء الاسم، 0 لإظهاره
         ];
     }
 }

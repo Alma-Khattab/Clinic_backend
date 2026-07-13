@@ -11,7 +11,16 @@ class FavoriteController extends Controller
 {
     public function addToFavorite($doctorId)
     {
-        Doctor::findOrFail($doctorId);
+        $doctor = Doctor::where('id', $doctorId)
+            ->whereHas('user', function ($query) {
+                $query->where('status', 'approved');
+            })->first();
+
+        if (!$doctor) {
+            return response()->json([
+                'message' => 'Doctor not found or not approved by admin.'
+            ], 404);
+        }
         $user = Auth::user();
         if ($user->role !== 'patient') {
             return response()->json([
