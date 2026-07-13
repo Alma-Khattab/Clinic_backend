@@ -1020,6 +1020,923 @@
         }
       },
       "response": []
+    },
+    {
+      "name": "/doctor/shift-days/{id}",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|PsWdtNWxPuoxHIKYyt4ZfOxicsRiLlsyItgqTHuC270d6078",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "shift_id",
+              "value": "1",
+              "type": "text",
+              "uuid": "76896f2d-d404-474c-850c-d37476a50e65"
+            },
+            {
+              "key": "working_days[0]",
+              "value": "Sunday",
+              "type": "text",
+              "uuid": "b0d14eb5-e8c9-406c-a856-370c93a801b6"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/admin/doctor/shift-days/2",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "admin",
+            "doctor",
+            "shift-days",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "storePatientProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "8|YIoTgrZp6rKeAhBewdCoxLQE4FRkbkjPa70FSEfFd34131e4",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "address",
+              "value": "jhjhkj",
+              "type": "text",
+              "uuid": "65e275df-8360-48e8-bc7e-9b2290049718"
+            },
+            {
+              "key": "blood_type",
+              "value": "hghg",
+              "type": "text",
+              "uuid": "4b4e8e9d-b6b3-4190-8fc8-ce387820eae9"
+            },
+            {
+              "key": "height",
+              "value": "123",
+              "type": "text",
+              "uuid": "6b716788-a370-400e-b886-0471194d63a2"
+            },
+            {
+              "key": "weight",
+              "value": "12",
+              "type": "text",
+              "uuid": "d6db2c8e-b5a3-4018-8239-25d8a5e24c54"
+            },
+            {
+              "key": "job",
+              "value": "44\n",
+              "type": "text",
+              "uuid": "879ca46a-45e8-415d-82ff-e595b385cf62"
+            },
+            {
+              "key": "marital_status",
+              "value": "hghg",
+              "type": "text",
+              "uuid": "290f34a8-f502-4f8b-9ab6-d8dc4261ec63"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/patient/store",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "patient",
+            "store"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updatePatientProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "9|LoRBPuDz5FWyFfvY4dI9UyyxhtpWBA02gs4JHiib987b22fd",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "_method",
+              "value": "PUT",
+              "type": "text",
+              "uuid": "b8b41c87-5894-45a7-80fe-779082053b98"
+            },
+            {
+              "key": "height",
+              "value": "105",
+              "type": "text",
+              "uuid": "baae6456-1554-41c2-b8e6-103068223c32"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/patient/update/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "patient",
+            "update",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getPatientProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "10|QcFFcUWeSFvCgx5e63aBXMWjTv3HdKXqBYWH7SsIdb8790ae",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/patient/get/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "patient",
+            "get",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deletePatientProfile",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "10|QcFFcUWeSFvCgx5e63aBXMWjTv3HdKXqBYWH7SsIdb8790ae",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/profile/patient/delete/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "profile",
+            "patient",
+            "delete",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getDoctorsBySpecialization",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "11|7rjwcuxturj2ITh7KPxD9kSqXNTWyeDA4SE9sGSl471a8e5a",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/doctors/specialization/Dentistry",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "doctors",
+            "specialization",
+            "Dentistry"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getDoctorProfileForBooking",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "13|Vy7wENsxH2EuINavAcwLe9wYSvu5OiGePBaSpwa22ac5dded",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/doctors/profile/10",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "doctors",
+            "profile",
+            "10"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "appointmentBooking",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "13|Vy7wENsxH2EuINavAcwLe9wYSvu5OiGePBaSpwa22ac5dded",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "doctor_id",
+              "value": "10",
+              "type": "text",
+              "uuid": "0737b533-b5d0-4eeb-9f41-cced5faf8485"
+            },
+            {
+              "key": "appointment_date",
+              "value": "2026/7/8",
+              "type": "text",
+              "uuid": "88adb5e4-3216-4366-b877-93b813b278d7"
+            },
+            {
+              "key": "appointment_time",
+              "value": "9",
+              "type": "text",
+              "uuid": "f7281e5a-76d8-4058-8c1d-4f7cd5e8a490"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/appointments",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "appointments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getAvailableSlots",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "searchDoctors",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/doctors/search",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "doctors",
+            "search"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "saveFcmToken",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "2|bK1u2ttzyQN0CGiDhEmroFE3kXZ3dY5Be51EA36P5c8a3072",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/save-fcm-token",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "save-fcm-token"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "cancelAppointment",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "17|mCFEur0ahqPEibtRgO5LkHvaqR1wHW8ZZg4BIYbE697d4c67",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/appointments/7/cancel",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "appointments",
+            "7",
+            "cancel"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updateAppointment",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "20|WjNvWvuQOQVqwP4V3aRmJlWFrXMv12YpZlF8tA2n2d90c6e5",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "_method",
+              "value": "PUT",
+              "type": "text",
+              "uuid": "f4afe512-cf15-49f8-98d8-2b95a3902789"
+            },
+            {
+              "key": "appointment_date",
+              "value": "2026-06-15",
+              "type": "text",
+              "uuid": "9542e98b-44d4-44f2-8fe0-4b29e60dcc34"
+            },
+            {
+              "key": "appointment_time",
+              "value": "10:30",
+              "type": "text",
+              "uuid": "e2dc7ba5-bed1-4a5e-b1e8-8d06026a214b"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/appointments/5/update",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "appointments",
+            "5",
+            "update"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "feedbackStore",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "6|VqMV72JnGEyIBNzZGULy9RPjCoxXA5JgyTO8hxP47c04c0d9",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "appointment_id",
+              "value": "4",
+              "type": "text",
+              "uuid": "1e1c4ff7-f857-426f-b9dd-4317cfdf73fa"
+            },
+            {
+              "key": "comment",
+              "value": "yyyyy",
+              "type": "text",
+              "uuid": "ad20a52a-47a7-4b19-b9c3-4725dcffc501"
+            },
+            {
+              "key": "is_anonymous",
+              "value": "1",
+              "type": "text",
+              "uuid": "edba5dc2-37e0-4e39-bec1-d2d63530d957"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/feedbacks/store",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "feedbacks",
+            "store"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "feedbackUpdate",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "8|R2eYUbDToOIcbOyln8LMuB0cmKsXGPxmZYDuJau77a2353e5",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "comment",
+              "value": "ssssssssggg",
+              "type": "text",
+              "uuid": "ad20a52a-47a7-4b19-b9c3-4725dcffc501"
+            },
+            {
+              "key": "is_anonymous",
+              "value": "1",
+              "type": "text",
+              "uuid": "edba5dc2-37e0-4e39-bec1-d2d63530d957"
+            },
+            {
+              "key": "_method",
+              "value": "PUT",
+              "type": "text",
+              "uuid": "3921860d-0636-4d41-8d5f-807f04905fe5"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/feedbacks/update/1",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "feedbacks",
+            "update",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "feedbackDelete",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "6|VqMV72JnGEyIBNzZGULy9RPjCoxXA5JgyTO8hxP47c04c0d9",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/feedbacks/destroy/5",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "feedbacks",
+            "destroy",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getDoctorFeedbacks",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "19|WW4Xz578ZNjvj7kgjC14pu1JuE3o9s485OemgstEa1fa8927",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/feedbacks/doctor",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "feedbacks",
+            "doctor"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getPatientFeedbacks",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "21|0dc882TN5kj33knTsPpzl3vAkb14SvkRcTBx7dSs355b1829",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/feedbacks/patient",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "feedbacks",
+            "patient"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "showFeedback",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "21|0dc882TN5kj33knTsPpzl3vAkb14SvkRcTBx7dSs355b1829",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8001/api/feedbacks/10",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "feedbacks",
+            "10"
+          ]
+        }
+      },
+      "response": []
     }
   ]
 }
