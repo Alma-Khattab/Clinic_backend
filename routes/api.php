@@ -25,7 +25,6 @@ Route::post('/verifyotp', [AuthController::class, 'verifyOtp']);
 Route::post('/forgotpassword', [AuthController::class, 'forgotPassword']);
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 
-
 Route::middleware(['auth:sanctum', CheckAdmin::class])->group(function () {
     Route::prefix('/admin')->group(function () {
         Route::get('/doctor/approve/{id}', [AdminController::class, 'approveDoctor']);

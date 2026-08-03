@@ -149,8 +149,7 @@ class DoctorController extends Controller
 
     public function getDoctorsBySpecialization($specialization)
 {
-    $doctors = Doctor::where('doctor_specialization', $specialization)->get();
-
+    $doctors = Doctor::with(['user', 'shift'])->where('doctor_specialization', $specialization)->get();
     if ($doctors->isEmpty()) {
         return response()->json(['message' => 'There are currently no doctors in this specialty.'], 404);
     }

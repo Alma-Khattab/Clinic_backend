@@ -201,9 +201,14 @@ class AppointmentController extends Controller
 
     $history = Appointment::where('doctor_id', $user->doctor->id)
         ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status')
-        ->with(['user' => function($query) {
-            $query->select('id', 'full_name');
-        }])
+        ->with([
+            'user' => function($query) {
+                $query->select('id', 'full_name');
+            },
+            'user.patient' => function($query) {
+                $query->select('id', 'user_id', 'personal_image');
+            }
+        ])
         ->orderBy('appointment_date', 'desc')
         ->orderBy('appointment_time', 'desc')
         ->get();
@@ -214,7 +219,10 @@ class AppointmentController extends Controller
             'appointment_date' => $appointment->appointment_date,
             'appointment_time' => $appointment->appointment_time,
             'status' => $appointment->status,
-            'patient_name' => $appointment->user ? $appointment->user->full_name : 'Unknown Patient'
+            'patient_name' => $appointment->user ? $appointment->user->full_name : 'Unknown Patient',
+            'patient_image' => ($appointment->user && $appointment->user->patient)
+                                ? $appointment->user->patient->personal_image
+                                : null
         ];
     });
 
@@ -239,9 +247,14 @@ class AppointmentController extends Controller
     $appointments = Appointment::where('doctor_id', $user->doctor->id)
         ->where('appointment_date', $date)
         ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status')
-        ->with(['user' => function($query) {
-            $query->select('id', 'full_name');
-        }])
+        ->with([
+            'user' => function($query) {
+                $query->select('id', 'full_name');
+            },
+            'user.patient' => function($query) {
+                $query->select('id', 'user_id', 'personal_image');
+            }
+        ])
         ->orderBy('appointment_time', 'asc')
         ->get();
 
@@ -251,7 +264,10 @@ class AppointmentController extends Controller
             'appointment_date' => $appointment->appointment_date,
             'appointment_time' => $appointment->appointment_time,
             'status' => $appointment->status,
-            'patient_name' => $appointment->user ? $appointment->user->full_name : 'Unknown Patient'
+            'patient_name' => $appointment->user ? $appointment->user->full_name : 'Unknown Patient',
+            'patient_image' => ($appointment->user && $appointment->user->patient)
+                                ? $appointment->user->patient->personal_image
+                                : null
         ];
     });
 
@@ -262,7 +278,6 @@ class AppointmentController extends Controller
         'appointments' => $formattedAppointments
     ], 200);
 }
-
 public function completeAppointment($id)
 {
     $user = Auth::user();

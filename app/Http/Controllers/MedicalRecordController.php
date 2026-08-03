@@ -151,38 +151,48 @@ class MedicalRecordController extends Controller
 
 
     public function getDoctorMedicalRecords($doctor_id)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        if (!$user || $user->role !== 'doctor' || !$user->doctor) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized. Only doctors can view medical records.'
-            ], 403);
-        }
-        if ($user->id != $doctor_id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unauthorized. You can only view your own medical history.'
-            ], 403);
-        }
-        $doctorId = $user->doctor->id;
-
-        $bookedUserIds = Appointment::where('doctor_id', $doctorId)
-            ->where('status', 'booked')
-            ->pluck('user_id')
-            ->toArray();
-
-        $medicalRecords =MedicalRecord::whereHas('patient', function ($query) use ($bookedUserIds) {
-            $query->whereIn('user_id', $bookedUserIds);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get();
-
+    if (!$user || $user->role !== 'doctor' ||  !$user->doctor) {
         return response()->json([
-            'success'         => true,
-            'total_records'   => $medicalRecords->count(),
-            'medical_records' => $medicalRecords
-        ], 200);
+            'success' => false,
+            'message' => 'Unauthorized. Only doctors can view medical records.'
+        ], 403);
     }
+
+    if ($user->id != $doctor_id) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Unauthorized. You can only view your own medical history.'
+        ], 403);
+    }
+
+    $doctorId = $user->doctor->id;
+
+    $medicalRecords = MedicalRecord::with(['patient.user'])
+        ->where('doctor_id', $doctorId)
+        ->orderBy('created_at', 'desc')
+        ->get()
+            ->map(function ($record) {
+            $data = $record->toArray();
+
+            $patient = $record->patient;
+            $patientUser = optional($patient)->user;
+
+            $data['patient_name'] = optional($patientUser)->full_name;
+            $data['patient_image'] = optional($patient)->personal_image;
+
+            unset($data['patient']);
+
+            return $data;
+        });
+
+
+    return response()->json([
+        'success'         => true,
+        'total_records'   => $medicalRecords->count(),
+        'medical_records' => $medicalRecords
+    ], 200);
+}
 }

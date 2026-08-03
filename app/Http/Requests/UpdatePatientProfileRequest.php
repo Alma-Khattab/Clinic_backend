@@ -26,7 +26,14 @@ class UpdatePatientProfileRequest extends FormRequest
             'height'=>'sometimes|integer',
             'weight'=>'sometimes|numeric',
             'job'=>'sometimes|string',
-            'marital_status'=>'sometimes|string'
+            'marital_status'=>'sometimes|string',
+            'personal_image' =>"sometimes|image|mimes:png,jpg,jpeg,gif|max:10240",
+            'blood_type'          => 'sometimes|string|max:10',
+            'drug_allergies'      => 'sometimes|nullable|string',
+            'chronic_diseases'    => 'sometimes|nullable|string',
+            'previous_operations' => 'sometimes|nullable|string',
+            'current_medicines'   => 'sometimes|nullable|string',
+            'smoker'              => 'sometimes|boolean',
         ];
     }
 }
