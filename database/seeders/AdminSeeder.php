@@ -17,10 +17,10 @@ class AdminSeeder extends Seeder
         User::create([
         'full_name' => 'Admin admin',
         'email' => 'admin@gmail.com',
-        'gender' => 'male',
         'password' => Hash::make('123456000'),
         'date_of_birth' => '1990-1-1',
         'role' => 'admin',
+        'gender'=>'male',
         'status' => 'approved',
     ]);
     }

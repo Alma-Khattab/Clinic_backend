@@ -13,9 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-        ShiftSeeder::class,
-        AdminSeeder::class,
-    ]);
+        $this->call([AdminSeeder::class , ShiftSeeder::class]);
     }
 }

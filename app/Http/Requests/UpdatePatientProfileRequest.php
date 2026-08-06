@@ -22,12 +22,12 @@ class UpdatePatientProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address'=>'sometimes|string|max:255',
-            'height'=>'sometimes|integer',
-            'weight'=>'sometimes|numeric',
-            'job'=>'sometimes|string',
-            'marital_status'=>'sometimes|string',
-            'personal_image' =>"sometimes|image|mimes:png,jpg,jpeg,gif|max:10240",
+            'address'             => 'sometimes|string|max:255',
+            'height'              => 'sometimes|integer|min:30|max:250',
+            'weight'              => 'sometimes|numeric|min:1|max:300',
+            'job'                 => 'sometimes|string|max:255',
+            'marital_status'      => 'sometimes|string|max:50',
+            'personal_image'      => 'sometimes|image|mimes:png,jpg,jpeg,gif|max:10240',
             'blood_type'          => 'sometimes|string|max:10',
             'drug_allergies'      => 'sometimes|nullable|string',
             'chronic_diseases'    => 'sometimes|nullable|string',

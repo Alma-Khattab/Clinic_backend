@@ -43,23 +43,25 @@ class UserController extends Controller
             'otp_type',
             'remember_token'
         ]);
+
         return response()->json([
-            'massege' => 'A verification code has been sent to your email.',
-            'User' => $user
+            'message' => 'A verification code has been sent to your email.',
+            'user' => $user
         ], 201);
     }
 
     public function login(Request $request)
     {
-
         $request->validate([
             'email' => 'required|email',
-            'password' => "required|string"
+            'password' => 'required|string'
         ]);
-        if (!Auth::attempt($request->only('email', 'password')))
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'massege' => 'invalid password or email'
+                'message' => 'Invalid password or email'
             ], 401);
+        }
 
         $user = User::where('email', $request->email)->firstOrFail();
 
@@ -68,10 +70,11 @@ class UserController extends Controller
                 'message' => 'Account not verified. Please verify OTP first.'
             ], 403);
         }
+
         if ($user->status == 'approved') {
             $token = $user->createToken('auth_token')->plainTextToken;
             return response()->json([
-                'message' => 'login successfully',
+                'message' => 'Login successfully',
                 'user' => $user,
                 'token' => $token
             ], 200);
@@ -89,8 +92,25 @@ class UserController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return response()->json([
-            'massege' => 'logout successfully'
+            'message' => 'Logout successfully'
         ], 200);
+    }
+
+    public function saveFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required'
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'fcm_token' => $request->fcm_token
+        ]);
+
+        return response()->json([
+            'message' => 'Token saved successfully'
+        ]);
     }
 }

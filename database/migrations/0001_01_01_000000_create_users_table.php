@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->text('fcm_token')->nullable();
             $table->string('full_name');
             $table->string('email')->unique();
-            $table->enum('gender',['male','female']);
             $table->string('password');
             $table->date('date_of_birth');
             $table->enum('role',['admin','doctor','patient']);
+            $table->enum('gender',['male','female']);
             $table->enum('status',['pending','approved','rejected']);
             $table->string('otp')->nullable();
             $table->string('otp_type')->nullable();
