@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
@@ -7,9 +8,59 @@ use App\Http\Requests\StoreAppointmentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+////////////new
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
+    public function getAvailableSlots($id, $date)
+    {
+        // ✅ التعديل هنا: أخذ التاريخ مباشرة من بارامتر الدالة القادم من الرابط (وبدون سيشن)
+        $chosenDate = $date;
+
+        $doctor = Doctor::with('shift')->findOrFail($id);
+
+        if (!$doctor->shift) {
+            return response()->json(['success' => false, 'message' => "No work shift has been assigned for this doctor yet."], 422);
+        }
+
+        $dayName = Carbon::parse($chosenDate)->format('l');
+
+        if (!in_array($dayName, $doctor->working_days)) {
+            return response()->json(['success' => false, 'message' => "The doctor is not working on this day."], 422);
+        }
+
+        $startTime = Carbon::parse($doctor->shift->start_time);
+        $endTime = Carbon::parse($doctor->shift->end_time);
+        $allSlots = [];
+
+        while ($startTime->lt($endTime)) {
+            $requestedDateTime = Carbon::parse($chosenDate . ' ' . $startTime->format('H:i'), 'Asia/Damascus');
+            $now = Carbon::now('Asia/Damascus');
+
+            if ($requestedDateTime->getTimestamp() > $now->getTimestamp()) {
+                // ✅ تعديل إضافي: توليد الوقت بالثواني ليطابق تماماً تخزين الداتابيز ويحذف المحجوز بنجاح
+                $allSlots[] = $startTime->format('H:i:s');
+            }
+
+            $startTime->addMinutes(30);
+        }
+
+        $bookedTimes = Appointment::where('doctor_id', $id)
+            ->where('appointment_date', $chosenDate)
+            ->where('status', 'booked')
+            ->pluck('appointment_time')
+            ->toArray();
+
+        $availableSlots = array_diff($allSlots, $bookedTimes);
+
+        return response()->json([
+            'success'         => true,
+            'date_checked'    => $chosenDate,
+            'shift_name'      => $doctor->shift->name,
+            'available_slots' => array_values($availableSlots)
+        ]);
+    }
     public function book(StoreAppointmentRequest $request)
     {
         $user = Auth::user();
@@ -25,10 +76,15 @@ class AppointmentController extends Controller
             ->where('status', 'missed')
             ->count();
 
-        if ($missedCount >= 2) {
+        if ($missedCount >= 3 || ($user->patient && $user->patient->is_blocked)) {
+            // 📍 تسجيل محاولة حجز من مريض محظور
+            Log::warning("Blocked patient attempted to book an appointment", [
+                'user_id'      => $user->id,
+                'missed_count' => $missedCount
+            ]);
             return response()->json([
                 'success' => false,
-                'message' => 'You are blocked from booking appointments because you missed your previous appointments twice.'
+                'message' => 'Sorry, you have been blocked from booking because you missed 3 appointments.'
             ], 403);
         }
 
@@ -97,17 +153,25 @@ class AppointmentController extends Controller
         $validatedData['user_id'] = Auth::id();
         $validatedData['status']  = 'booked';
         $appointment = Appointment::create($validatedData);
+        // 📍 تسجيل حجز موعد جديد
+        Log::info("New appointment booked", [
+            'appointment_id'   => $appointment->id,
+            'patient_user_id'  => $user->id,
+            'doctor_id'        => $doctor->id,
+            'appointment_date' => $appointment->appointment_date,
+            'appointment_time' => $appointment->appointment_time
+        ]);
 
         // إرسال الإشعارات
         $doctorUser = $doctor->user;
         $patientUser = Auth::user();
         $firebase = app(\App\Services\FirebaseNotificationService::class);
-
+//
         if ($patientUser->fcm_token) {
             $firebase->sendNotification(
                 $patientUser->fcm_token,
                 'Appointment Confirmed',
-                'Your appointment has been booked successfully.'
+                "Your appointment has been booked successfully.\n\n⚠️ Important Note: Please attend on time. Missing 3 scheduled appointments will result in an automatic block from booking future appointments."//"تم حجز موعدك بنجاح! ⚠️ يرجى الانتباه: عدم الحضور لـ 3 مواعيد يتسبب في حظر الحساب تلقائياً."
             );
         }
 
@@ -154,12 +218,36 @@ class AppointmentController extends Controller
 
         if ($patient) {
             $patient->increment('missed_appointments_count');
+            // 📍 تسجيل تغيير الحالة إلى missed
+            Log::notice("Appointment marked as missed", [
+                'appointment_id' => $appointment->id,
+                'patient_id'     => $patient->id,
+                'doctor_id'      => $user->doctor->id
+            ]);
 
-            if ($patient->missed_appointments_count >= 2) {
-                $patient->update(['is_blocked' => true]);
+            if ($patient->missed_appointments_count >= 3) {
+                // Auto-cancel all upcoming booked appointments for this patient
+                Appointment::where('user_id', $appointment->user_id)
+                    ->where('status', 'booked')
+                    ->update(['status' => 'cancelled']);
+                //اشعارات
+                $patientUser = $appointment->user; // أو $patient->user حسب علاقات Models لديك
+                if ($patientUser && $patientUser->fcm_token) {
+                    $firebase = app(\App\Services\FirebaseNotificationService::class);
+                    $firebase->sendNotification(
+                        $patientUser->fcm_token,
+                        'Account Blocked',
+                        'You have been blocked from booking new appointments due to missing 3 appointments, and all your upcoming appointments have been cancelled.'
+                    );
+                }
+                // تسجيل تحذير في الـ Log عند حظر المريض
+                Log::warning("Patient Blocked due to missed appointments", [
+                    'patient_id' => $patient->id,
+                    'missed_count' => $patient->missed_appointments_count
+                ]);
                 return response()->json([
                     'success' => true,
-                    'message' => 'Appointment marked as missed. The patient has reached the limit (2) and is now blocked from future bookings.'
+                    'message' => 'Appointment marked as missed. The patient has reached the limit (3) and is now blocked from future bookings. All upcoming appointments have been cancelled.'
                 ], 200);
             }
         }
@@ -183,10 +271,10 @@ class AppointmentController extends Controller
         $history = Appointment::where('doctor_id', $user->doctor->id)
             ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status')
             ->with([
-                'user' => function($query) {
+                'user' => function ($query) {
                     $query->select('id', 'full_name');
                 },
-                'user.patient' => function($query) {
+                'user.patient' => function ($query) {
                     $query->select('id', 'user_id', 'personal_image');
                 }
             ])
@@ -194,7 +282,7 @@ class AppointmentController extends Controller
             ->orderBy('appointment_time', 'desc')
             ->get();
 
-        $customHistory = $history->map(function($appointment) {
+        $customHistory = $history->map(function ($appointment) {
             return [
                 'id' => $appointment->id,
                 'appointment_date' => $appointment->appointment_date,
@@ -202,8 +290,8 @@ class AppointmentController extends Controller
                 'status' => $appointment->status,
                 'patient_name' => $appointment->user ? $appointment->user->full_name : 'Unknown Patient',
                 'patient_image' => ($appointment->user && $appointment->user->patient)
-                                    ? $appointment->user->patient->personal_image
-                                    : null
+                    ? $appointment->user->patient->personal_image
+                    : null
             ];
         });
 
@@ -229,17 +317,17 @@ class AppointmentController extends Controller
             ->where('appointment_date', $date)
             ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status')
             ->with([
-                'user' => function($query) {
+                'user' => function ($query) {
                     $query->select('id', 'full_name');
                 },
-                'user.patient' => function($query) {
+                'user.patient' => function ($query) {
                     $query->select('id', 'user_id', 'personal_image');
                 }
             ])
             ->orderBy('appointment_time', 'asc')
             ->get();
 
-        $formattedAppointments = $appointments->map(function($appointment) {
+        $formattedAppointments = $appointments->map(function ($appointment) {
             return [
                 'id' => $appointment->id,
                 'appointment_date' => $appointment->appointment_date,
@@ -247,8 +335,12 @@ class AppointmentController extends Controller
                 'status' => $appointment->status,
                 'patient_name' => $appointment->user ? $appointment->user->full_name : 'Unknown Patient',
                 'patient_image' => ($appointment->user && $appointment->user->patient)
-                                    ? $appointment->user->patient->personal_image
-                                    : null
+                    ? $appointment->user->patient->personal_image
+                    : null,
+                'patient_user_id' => $appointment->user_id,
+                'patient_profile_id' => ($appointment->user && $appointment->user->patient)
+                    ? $appointment->user->patient->id
+                    : null
             ];
         });
 
@@ -283,6 +375,11 @@ class AppointmentController extends Controller
 
         $appointment->status = 'completed';
         $appointment->save();
+        // 📍 تسجيل إكمال الموعد
+        Log::info("Appointment marked as completed", [
+            'appointment_id' => $appointment->id,
+            'doctor_id'      => $user->doctor->id
+        ]);
 
         return response()->json([
             'success' => true,
@@ -309,7 +406,14 @@ class AppointmentController extends Controller
             }
             $appointment->status = 'cancelled';
             $appointment->save();
-
+            ////////////new
+            // 📍 تسجيل عملية إلغاء الموعد بواسطة المريض
+            Log::info("Appointment Cancelled", [
+                'appointment_id' => $appointment->id,
+                'cancelled_by_role' => $user->role,
+                'user_id' => $user->id
+            ]);
+            ////////////
             $doctorUser = $appointment->doctor->user;
             if ($user->fcm_token) {
                 $firebase->sendNotification(
@@ -465,6 +569,15 @@ class AppointmentController extends Controller
         $appointment->update([
             'appointment_date' => $request->appointment_date,
             'appointment_time' => $request->appointment_time,
+        ]);
+        // 📍 تسجيل إعادة جدولة الموعد (تعديل الوقت/التاريخ)
+        Log::info("Appointment rescheduled", [
+            'appointment_id' => $appointment->id,
+            'user_id'        => Auth::id(),
+            'old_date'       => $oldDate,
+            'old_time'       => $oldTime,
+            'new_date'       => $appointment->appointment_date,
+            'new_time'       => $appointment->appointment_time
         ]);
 
         $firebase = app(\App\Services\FirebaseNotificationService::class);

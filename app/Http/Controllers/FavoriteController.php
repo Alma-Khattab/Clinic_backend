@@ -6,6 +6,7 @@ use App\Models\Doctor;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class FavoriteController extends Controller
 {
@@ -28,6 +29,11 @@ class FavoriteController extends Controller
             ], 403);
         }
         $user->favoriteDoctors()->syncWithoutDetaching([$doctorId]);
+        // 📍 تسجيل إضافة الطبيب إلى المفضلة
+        Log::info("Doctor Added to Favorites", [
+            'patient_user_id' => $user->id,
+            'doctor_id'       => $doctorId
+        ]);
         return response()->json([
             'message' => 'Doctor added to favorite'
         ], 200);
@@ -37,6 +43,11 @@ class FavoriteController extends Controller
     {
         $user = Auth::user();
         $user->favoriteDoctors()->detach($doctorId);
+        // 📍 تسجيل إزالة الطبيب من المفضلة
+        Log::info("Doctor Removed from Favorites", [
+            'patient_user_id' => $user->id,
+            'doctor_id'       => $doctorId
+        ]);
         return response()->json([
             'message' => 'Doctor removed from favorite'
         ], 200);

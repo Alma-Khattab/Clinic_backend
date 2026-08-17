@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class FeedbackController extends Controller
 {
@@ -42,6 +43,14 @@ class FeedbackController extends Controller
             'doctor_id'      => $appointment->doctor_id,
             'comment'        => $validated['comment'],
             'is_anonymous'   => $validated['is_anonymous'],
+        ]);
+
+        // 📍 تسجيل إنشاء التقييم
+        Log::info("New Feedback Submitted", [
+            'feedback_id'    => $feedback->id,
+            'patient_user_id' => $userId,
+            'doctor_id'      => $appointment->doctor_id,
+            'is_anonymous'   => $feedback->is_anonymous
         ]);
 
         // =================  نظام الإشعارات للفيربيز  =================
@@ -88,6 +97,12 @@ class FeedbackController extends Controller
             'is_anonymous' => $request->is_anonymous,
         ]);
 
+        // 📍 تسجيل تعديل التقييم
+        Log::info("Feedback Updated", [
+            'feedback_id' => $feedback->id,
+            'user_id'     => Auth::id()
+        ]);
+
         return response()->json([
             'success' => true,
             'message' => 'Feedback updated successfully.',
@@ -103,6 +118,10 @@ class FeedbackController extends Controller
         }
 
         $feedback->delete();
+        // 📍 تسجيل حذف التقييم
+        Log::info("Feedback Deleted", [
+            'user_id'     => Auth::id()
+        ]);
 
         return response()->json([
             'success' => true,

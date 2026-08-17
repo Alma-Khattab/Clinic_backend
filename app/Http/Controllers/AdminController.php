@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Doctor;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -23,6 +25,11 @@ class AdminController extends Controller
 
         $doctor->status = 'approved';
         $doctor->save();
+        // 📍 تسجيل عملية القبول
+        Log::info("Doctor approved by admin", [
+            'admin_id' => Auth::user(),
+            'doctor_id' => $doctor->id
+        ]);
 
         return response()->json([
             'message' => 'Doctor approved successfully.'
@@ -40,6 +47,11 @@ class AdminController extends Controller
 
         $doctor->status = 'rejected';
         $doctor->save();
+        // 📍 تسجيل عملية الرفض
+        Log::info("Doctor rejected by admin", [
+            'admin_id' => Auth::user(),
+            'doctor_id' => $doctor->id
+        ]);
 
         return response()->json([
             'message' => 'Doctor rejected.'
@@ -96,6 +108,12 @@ class AdminController extends Controller
                 'message' => 'Admin cannot delete himself'
             ], 403);
         }
+        // 📍 تسجيل عملية الحذف (خطيرة جداً ويجب توثيقها)
+        Log::warning("User deleted by admin", [
+            'admin_id' => $request->user()->id,
+            'deleted_user_id' => $user->id,
+            'deleted_user_email' => $user->email
+        ]);
 
         $user->delete();
         return response()->json('User deleted successfully', 200);
@@ -124,7 +142,12 @@ class AdminController extends Controller
             'working_days' => $validated['working_days'],
         ]
     );
-
+    // 📍 تسجيل تغيير وردية الدكتور
+        Log::info("Doctor shift assigned by admin", [
+            'admin_id' => Auth::user(),
+            'doctor_id' => $user->id,
+            'shift_id' => $validated['shift_id']
+        ]);
     return response()->json([
         'success' => true,
         'message' => 'The shift and working days have been successfully added.'

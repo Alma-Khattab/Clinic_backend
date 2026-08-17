@@ -41,11 +41,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // User Session & FCM
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return $request->user() ? $request->user()->load('patient') : null;
     });
     Route::post('/logout', [UserController::class, 'logout']);
     Route::post('/save-fcm-token', [UserController::class, 'saveFcmToken']);
-
+    //newميزة تعديل الايميل
+    Route::put('/user/update-profile', [UserController::class, 'updateUserBasicInfo']);
+    Route::post('/user/change-email-request', [UserController::class, 'changeEmailRequest']);
+    Route::post('/user/verify-change-email', [UserController::class, 'verifyChangeEmail']);
     /*
     |--------------------------------------------------------------------------
     | Admin Routes (مسارات الأدمن)
@@ -95,6 +98,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Patient Profile
     Route::prefix('/profile/patient')->group(function () {
         Route::post('/store', [PatientController::class, 'storeProfile']);
+        Route::get('/missed', [PatientController::class, 'getMissedAppointments']);
         Route::get('/get/{id}', [PatientController::class, 'getProfile']);
         Route::put('/update/{id}', [PatientController::class, 'updateProfile']);
         Route::delete('/delete/{id}', [PatientController::class, 'destroyProfile']);

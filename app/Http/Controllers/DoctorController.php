@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class DoctorController extends Controller
 {
@@ -71,6 +72,11 @@ class DoctorController extends Controller
         }
 
         $profile->update($validateData);
+        // 📍 تسجيل تعديل البروفايل
+        Log::info("Doctor profile updated successfully", [
+            'doctor_id' => $profile->id,
+            'user_id'   => $user_id
+        ]);
 
         return response()->json([
             'message' => "Profile updated successfully.",
@@ -89,13 +95,26 @@ class DoctorController extends Controller
             }
 
             $profile->delete();
+            // 📍 تسجيل حذف ملف الطبيب
+            Log::info("Doctor profile deleted successfully", [
+                'user_id'   => $user_id
+            ]);
             return response()->json('Profile deleted successfully', 200);
         } catch (ModelNotFoundException $e) {
+            Log::warning("Attempted to delete non-existing doctor profile", [
+                'doctor_id' => $id,
+                'user_id'   => Auth::id()
+            ]);
             return response()->json([
                 'error' => 'Profile not found',
                 'details' => $e->getMessage()
             ], 404);
         } catch (Exception $e) {
+            // 📍 تسجيل خطأ أثناء عملية الحذف
+            Log::error("Failed to delete doctor profile", [
+                'doctor_id' => $id,
+                'error'     => $e->getMessage()
+            ]);
             return response()->json([
                 'error' => 'Something went wrong while deleting the profile',
                 'details' => $e->getMessage()
@@ -105,7 +124,7 @@ class DoctorController extends Controller
 
     public function getDoctorProfile($id)
     {
-        if (auth()->id() != $id) {
+        if (Auth::id() != $id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied. You can only view your own profile.'
@@ -146,6 +165,7 @@ class DoctorController extends Controller
                 'phone_number'          => $doctorProfile->phone_number,
                 'doctor_specialization' => $doctorProfile->doctor_specialization,
                 'working_days'          => $doctorProfile->working_days,
+                'shift_id'              => $doctorProfile->shift_id,
                 'personal_image'        => $doctorProfile->personal_image,
                 'document_image'        => $doctorProfile->document_image,
                 'bio'                   => $doctorProfile->bio,
@@ -227,7 +247,7 @@ class DoctorController extends Controller
 
     public function getRandomDoctors()
     {
-        $randomDoctors = Doctor::with('user')
+        $randomDoctors = Doctor::with(['user', 'shift'])
             ->inRandomOrder()
             ->limit(5)
             ->get();
@@ -241,7 +261,7 @@ class DoctorController extends Controller
 
     public function getDoctorUpcomingAppointments(Request $request, $date = null)
     {
-        $doctor = auth()->user()->doctor;
+        $doctor = Auth::user()->doctor;
 
         if (!$doctor) {
             return response()->json([

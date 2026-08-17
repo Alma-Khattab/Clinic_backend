@@ -22,7 +22,7 @@ class PatientRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'personal_image' =>"sometimes|image|mimes:png,jpg,jpeg,gif|max:2048",
+            'personal_image' =>"sometimes|image|mimes:png,jpg,jpeg,gif|max:10240",
             'address'=>'required|string|max:255',
             'blood_type'=>'required|string',
             'drug_allergies' => 'sometimes|nullable|string',
