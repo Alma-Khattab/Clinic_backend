@@ -66,7 +66,11 @@ class FeedbackController extends Controller
             $firebase->sendNotification(
                 $doctorUser->fcm_token,
                 'New Feedback Received',
-                "{$senderName} left a new feedback for you."
+                "{$senderName} left a new feedback for you.",
+                [
+                        'type'=>'feedback',
+                        'id'=>(string)$feedback->id
+                    ]
             );
         }
 

@@ -14,7 +14,7 @@ class AdminController extends Controller
     {
         $doctor = User::findOrFail($id);
 
-        if (!$doctor){
+        if (!$doctor) {
             return response()->json(['message' => 'User Not Found'], 404);
         }
         if ($doctor->role !== 'doctor') {
@@ -96,7 +96,7 @@ class AdminController extends Controller
         ], 200);
     }
 
-    public function deleteUser($id ,Request $request)
+    public function deleteUser($id, Request $request)
     {
         $user = User::find($id);
         if (!$user) {
@@ -121,36 +121,36 @@ class AdminController extends Controller
 
 
     public function assignShiftAndDays(Request $request, $id)
-{
-    $validated = $request->validate([
-        'shift_id'       => 'required|exists:shifts,id',
-        'working_days'   => 'required|array|min:1',
-        'working_days.*' => 'string|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Saturday'
-    ]);
+    {
+        $validated = $request->validate([
+            'shift_id'       => 'required|exists:shifts,id',
+            'working_days'   => 'required|array|min:1',
+            'working_days.*' => 'string|in:Sunday,Monday,Tuesday,Wednesday,Thursday,Saturday'
+        ]);
 
-    $user = User::findOrFail($id);
-    if ($user->role !== 'doctor') {
-                return response()->json([
-                    'message' => 'Assign shifts only to doctors.'
-                ], 403);
-            }
+        $user = User::findOrFail($id);
+        if ($user->role !== 'doctor') {
+            return response()->json([
+                'message' => 'Assign shifts only to doctors.'
+            ], 403);
+        }
 
-    $doctor = Doctor::updateOrCreate(
-        ['user_id' => $user->id],
-        [
-            'shift_id'     => $validated['shift_id'],
-            'working_days' => $validated['working_days'],
-        ]
-    );
-    // 📍 تسجيل تغيير وردية الدكتور
+        $doctor = Doctor::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'shift_id'     => $validated['shift_id'],
+                'working_days' => $validated['working_days'],
+            ]
+        );
+        // 📍 تسجيل تغيير وردية الدكتور
         Log::info("Doctor shift assigned by admin", [
             'admin_id' => Auth::user(),
             'doctor_id' => $user->id,
             'shift_id' => $validated['shift_id']
         ]);
-    return response()->json([
-        'success' => true,
-        'message' => 'The shift and working days have been successfully added.'
-    ], 200);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'The shift and working days have been successfully added.'
+        ], 200);
+    }
 }

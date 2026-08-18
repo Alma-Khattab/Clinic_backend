@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Api\FirebaseAuthController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\MedicalRecordController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
@@ -89,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/history', [AppointmentController::class, 'getDoctorAppointmentHistory']);
         Route::get('/day/{date}', [AppointmentController::class, 'getDoctorAppointmentsByDate']);
     });
+    Route::get('/patient/appointments/history', [AppointmentController::class, 'getPatientAppointmentHistory']);
 
     /*
     |--------------------------------------------------------------------------
@@ -155,4 +158,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/medical-records/patient/{patient_id}', [MedicalRecordController::class, 'getPatientHistory']);
     Route::get('/medical-records/doctor/{doctor_id}', [MedicalRecordController::class, 'getDoctorMedicalRecords']);
 
+    Route::post('/auth/firebase', [FirebaseAuthController::class, 'handleFirebaseToken']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+           // 1. رابط جلب كل الإشعارات
+            Route::get('/notifications', [NotificationController::class, 'index']);
+            // // 2. رابط تحديث الإشعار كمقروء
+            Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+        });
 });

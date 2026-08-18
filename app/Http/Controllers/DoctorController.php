@@ -239,6 +239,7 @@ class DoctorController extends Controller
                 'working_days'          => $doctor->working_days,
                 'shift'                 => $shiftName,
                 'personal_image'        => $doctor->personal_image,
+                'document_image'        => $doctor->document_image,
                 'bio'                   => $doctor->bio,
                 'years_of_experience'   => $doctor->years_of_experience,
             ]

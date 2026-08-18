@@ -166,12 +166,16 @@ class AppointmentController extends Controller
         $doctorUser = $doctor->user;
         $patientUser = Auth::user();
         $firebase = app(\App\Services\FirebaseNotificationService::class);
-//
+        //
         if ($patientUser->fcm_token) {
             $firebase->sendNotification(
                 $patientUser->fcm_token,
                 'Appointment Confirmed',
-                "Your appointment has been booked successfully.\n\n⚠️ Important Note: Please attend on time. Missing 3 scheduled appointments will result in an automatic block from booking future appointments."//"تم حجز موعدك بنجاح! ⚠️ يرجى الانتباه: عدم الحضور لـ 3 مواعيد يتسبب في حظر الحساب تلقائياً."
+                "Your appointment has been booked successfully.\n\n⚠️ Important Note: Please attend on time. Missing 3 scheduled appointments will result in an automatic block from booking future appointments.", //"تم حجز موعدك بنجاح! ⚠️ يرجى الانتباه: عدم الحضور لـ 3 مواعيد يتسبب في حظر الحساب تلقائياً."
+                [
+                    'type' => 'appointment',
+                    'id' => (string)$appointment->id
+                ]
             );
         }
 
@@ -179,7 +183,11 @@ class AppointmentController extends Controller
             $firebase->sendNotification(
                 $doctorUser->fcm_token,
                 'New Appointment',
-                'You have a new appointment booking.'
+                'You have a new appointment booking.',
+                [
+                        'type'=>'appointment',
+                        'id'=>(string)$appointment->id
+                    ]
             );
         }
 
@@ -302,6 +310,52 @@ class AppointmentController extends Controller
         ], 200);
     }
 
+    public function getPatientAppointmentHistory()
+    {
+        $user = Auth::user();
+        if (!$user || $user->role !== 'patient'  || !$user->patient) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Only patients can view this history.'
+            ], 403);
+        }
+
+        $history = Appointment::where('user_id', $user->id)
+            ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status')
+            ->with([
+                'doctor.user' => function ($query) {
+                    $query->select('id', 'full_name');
+                }
+            ])
+            ->orderBy('appointment_date', 'desc')
+            ->orderBy('appointment_time', 'desc')
+            ->get();
+
+        $customHistory = $history->map(function ($appointment) {
+            return [
+                'id' => $appointment->id,
+                'appointment_date' => $appointment->appointment_date,
+                'appointment_time' => $appointment->appointment_time,
+                'status' => $appointment->status,
+                'doctor_name' => ($appointment->doctor && $appointment->doctor->user)
+                    ? $appointment->doctor->user->full_name
+                    : 'Unknown Doctor',
+                'doctor_specialization' => $appointment->doctor
+                    ? $appointment->doctor->doctor_specialization
+                    : 'General',
+                'doctor_image' => $appointment->doctor
+                    ? $appointment->doctor->personal_image
+                    : null
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'total_appointments' => $customHistory->count(),
+            'history' => $customHistory
+        ], 200);
+    }
+
     public function getDoctorAppointmentsByDate($date)
     {
         $user = Auth::user();
@@ -375,6 +429,18 @@ class AppointmentController extends Controller
 
         $appointment->status = 'completed';
         $appointment->save();
+        if($appointment->patiaent && $appointment->patiant->fcm_token){
+            $firebase = app(\app\Services\FirebaseNotificationService::class);
+            $firebase->sendNotification(
+                $appointment->patient->fcm_token,
+                'اكتمل الموعد',
+                'تم اكمال الموعد  بنجاح نتمنى لكم دوام الصحة',
+                [
+                    'type'=>'appointment',
+                    'id'=>(string)$appointment->id
+                ]
+            );
+        }
         // 📍 تسجيل إكمال الموعد
         Log::info("Appointment marked as completed", [
             'appointment_id' => $appointment->id,
@@ -419,14 +485,22 @@ class AppointmentController extends Controller
                 $firebase->sendNotification(
                     $user->fcm_token,
                     'Cancelled Successfully',
-                    'Your appointment has been cancelled successfully.'
+                    'Your appointment has been cancelled successfully.',
+                    [
+                        'type'=>'appointment',
+                        'id'=>(string)$appointment->id
+                    ]
                 );
             }
             if ($doctorUser && $doctorUser->fcm_token) {
                 $firebase->sendNotification(
                     $doctorUser->fcm_token,
                     'Appointment Cancelled',
-                    'The patient has cancelled the appointment.'
+                    'The patient has cancelled the appointment.',
+                    [
+                        'type'=>'appointment',
+                        'id'=>(string)$appointment->id
+                    ]
                 );
             }
         } else if ($user->role === 'doctor') {
@@ -441,14 +515,22 @@ class AppointmentController extends Controller
                 $firebase->sendNotification(
                     $user->fcm_token,
                     'Cancelled Successfully',
-                    'Appointment has been cancelled successfully.'
+                    'Appointment has been cancelled successfully.',
+                    [
+                        'type'=>'appointment',
+                        'id'=>(string)$appointment->id
+                    ]
                 );
             }
             if ($patientUser && $patientUser->fcm_token) {
                 $firebase->sendNotification(
                     $patientUser->fcm_token,
                     'Appointment Cancelled',
-                    'The doctor has cancelled your appointment.'
+                    'The doctor has cancelled your appointment.',
+                    [
+                        'type'=>'appointment',
+                        'id'=>(string)$appointment->id
+                    ]
                 );
             }
         } else {
@@ -588,7 +670,11 @@ class AppointmentController extends Controller
             $firebase->sendNotification(
                 $patientUser->fcm_token,
                 'Appointment Updated',
-                'Your appointment has been changed successfully.'
+                'Your appointment has been changed successfully.',
+                [
+                        'type'=>'appointment',
+                        'id'=>(string)$appointment->id
+                    ]
             );
         }
 
@@ -596,7 +682,11 @@ class AppointmentController extends Controller
             $firebase->sendNotification(
                 $doctorUser->fcm_token,
                 'Appointment Updated',
-                'A patient has changed an appointment time.'
+                'A patient has changed an appointment time.',
+                [
+                        'type'=>'appointment',
+                        'id'=>(string)$appointment->id
+                    ]
             );
         }
 
