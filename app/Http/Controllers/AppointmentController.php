@@ -152,6 +152,18 @@ class AppointmentController extends Controller
 
         $validatedData['user_id'] = Auth::id();
         $validatedData['status']  = 'booked';
+        // 🟢 سحب المكافأة فور الحجز وتخصيص الموعد كمجاني    بداية
+        $patient = $user->patient;
+        if ($patient && $patient->has_free_visit) {
+            $validatedData['is_free'] = true;
+            $patient->has_free_visit = false;
+            $patient->save();
+        } else {
+            $validatedData['is_free'] = false;
+        }//نهاية
+
+
+
         $appointment = Appointment::create($validatedData);
         // 📍 تسجيل حجز موعد جديد
         Log::info("New appointment booked", [
@@ -226,6 +238,11 @@ class AppointmentController extends Controller
 
         if ($patient) {
             $patient->increment('missed_appointments_count');
+            // 🟢 التعديل الجديد: تصفير عداد المكافآت لأن المريض غاب ولم يلتزم
+           $patient->rewards_count = 0;
+           $patient->has_free_visit = false; // 👈 ضف هذا السطر فقط
+           $patient->save(); // نهاية التعديل
+
             // 📍 تسجيل تغيير الحالة إلى missed
             Log::notice("Appointment marked as missed", [
                 'appointment_id' => $appointment->id,
@@ -266,7 +283,7 @@ class AppointmentController extends Controller
         ], 200);
     }
 
-    public function getDoctorAppointmentHistory()
+    public function getDoctorAppointmentHistory(Request $request)
     {
         $user = Auth::user();
         if (!$user || $user->role !== 'doctor' || !$user->doctor) {
@@ -275,6 +292,7 @@ class AppointmentController extends Controller
                 'message' => 'Unauthorized. Only doctors can view this history.'
             ], 403);
         }
+        $perPage = $request->input('per_page', 10);
 
         $history = Appointment::where('doctor_id', $user->doctor->id)
             ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status')
@@ -288,9 +306,9 @@ class AppointmentController extends Controller
             ])
             ->orderBy('appointment_date', 'desc')
             ->orderBy('appointment_time', 'desc')
-            ->get();
+            ->paginate($perPage);
 
-        $customHistory = $history->map(function ($appointment) {
+        $customHistory = $history->through(function ($appointment) {
             return [
                 'id' => $appointment->id,
                 'appointment_date' => $appointment->appointment_date,
@@ -369,7 +387,7 @@ class AppointmentController extends Controller
 
         $appointments = Appointment::where('doctor_id', $user->doctor->id)
             ->where('appointment_date', $date)
-            ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status')
+            ->select('id', 'appointment_date', 'appointment_time', 'user_id', 'doctor_id', 'status','is_free')
             ->with([
                 'user' => function ($query) {
                     $query->select('id', 'full_name');
@@ -387,6 +405,7 @@ class AppointmentController extends Controller
                 'appointment_date' => $appointment->appointment_date,
                 'appointment_time' => $appointment->appointment_time,
                 'status' => $appointment->status,
+                'is_free' => (bool) $appointment->is_free, //معدل
                 'patient_name' => $appointment->user ? $appointment->user->full_name : 'Unknown Patient',
                 'patient_image' => ($appointment->user && $appointment->user->patient)
                     ? $appointment->user->patient->personal_image
@@ -426,6 +445,20 @@ class AppointmentController extends Controller
                 'message' => "This appointment cannot be completed because its current status is: {$appointment->status}."
             ], 400);
         }
+        // تحديث نظام المكافآت للمريض بداية التعديل
+              // 🟢 نظام المكافآت الجديد
+        $patient = \App\Models\Patient::where('user_id', $appointment->user_id)->first();
+        if ($patient) {
+            // نزيد العداد فقط إذا الموعد ليس مجانياً
+            if (!$appointment->is_free) {
+                $patient->rewards_count += 1;
+                if ($patient->rewards_count >= 3) {
+                    $patient->has_free_visit = true;
+                    $patient->rewards_count = 0;
+                }
+                $patient->save();
+            }
+        }//نهاية التعديل
 
         $appointment->status = 'completed';
         $appointment->save();
@@ -472,6 +505,13 @@ class AppointmentController extends Controller
             }
             $appointment->status = 'cancelled';
             $appointment->save();
+            // 🟢 عقاب الإلغاء: تصفير المكافآت وسحبها
+            $patient = $user->patient;
+            if ($patient) {
+                $patient->rewards_count = 0;
+                $patient->has_free_visit = false;
+                $patient->save();
+            }//نهاية التعديل
             ////////////new
             // 📍 تسجيل عملية إلغاء الموعد بواسطة المريض
             Log::info("Appointment Cancelled", [

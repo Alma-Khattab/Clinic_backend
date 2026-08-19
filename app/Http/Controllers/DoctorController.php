@@ -174,9 +174,10 @@ class DoctorController extends Controller
         ], 200);
     }
 
-    public function getDoctorsBySpecialization($specialization)
+    public function getDoctorsBySpecialization(Request $request,$specialization)
     {
-        $doctors = Doctor::with(['user', 'shift'])->where('doctor_specialization', $specialization)->get();
+        $perPage = $request->input('per_page', 10);
+        $doctors = Doctor::with(['user', 'shift'])->where('doctor_specialization', $specialization)->paginate($perPage); 
 
         if ($doctors->isEmpty()) {
             return response()->json(['message' => 'There are currently no doctors in this specialty.'], 404);
@@ -229,6 +230,21 @@ class DoctorController extends Controller
         }
 
         $shiftName = $doctor->shift ? ($doctor->shift->name === 'Morning' ? 'Morning' : 'Evening') : 'Unlimited';
+        $canLeaveFeedback = false;
+        $completedAppointmentId = null;
+
+        if ($user->role === 'patient') {
+            $completedAppointment = Appointment::where('user_id', $user->id)
+                ->where('doctor_id', $doctor->id)
+                ->where('status', 'completed')
+                ->whereDoesntHave('feedbacks')
+                ->first();
+
+            if ($completedAppointment) {
+                $canLeaveFeedback = true;
+                $completedAppointmentId = $completedAppointment->id;
+            }
+        }
 
         return response()->json([
             'success' => true,
@@ -242,6 +258,8 @@ class DoctorController extends Controller
                 'document_image'        => $doctor->document_image,
                 'bio'                   => $doctor->bio,
                 'years_of_experience'   => $doctor->years_of_experience,
+                'can_leave_feedback'    => $canLeaveFeedback,
+                'completed_appointment_id' => $completedAppointmentId,
             ]
         ], 200);
     }

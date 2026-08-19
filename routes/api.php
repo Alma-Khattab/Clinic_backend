@@ -145,6 +145,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/doctor', [FeedbackController::class, 'getDoctorFeedbacks']);
         Route::get('/patient', [FeedbackController::class, 'getPatientFeedbacks']);
         Route::get('/{id}', [FeedbackController::class, 'showFeedback']);
+        Route::get('/doctor/{doctorId}', [FeedbackController::class, 'getFeedbacksForDoctor']);
     });
 
     /*

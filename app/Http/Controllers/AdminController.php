@@ -58,27 +58,30 @@ class AdminController extends Controller
         ]);
     }
 
-    public function getAllUsers()
+    public function getAllUsers(Request $request)
     {
-        $users = User::where('role', '!=', 'admin')->get();
+        $perPage = $request->input('per_page', 10);
+        $users = User::where('role', '!=', 'admin')->paginate($perPage);
         return response()->json($users, 200);
     }
 
-    public function getAllPatients()
+    public function getAllPatients(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $patients = User::with('patient')
             ->where('role', 'patient')
-            ->get();
+            ->paginate($perPage);
         return response()->json([
             'patients' => $patients
         ], 200);
     }
 
-    public function getAllDoctors()
+    public function getAllDoctors(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         $doctors = User::with('doctor')
             ->where('role', 'doctor')
-            ->get();
+            ->paginate($perPage);
         return response()->json([
             'doctors' => $doctors
         ], 200);

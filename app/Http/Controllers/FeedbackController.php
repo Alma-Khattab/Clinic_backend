@@ -132,7 +132,7 @@ class FeedbackController extends Controller
             'message' => 'Feedback deleted successfully.'
         ]);
     }
-    public function getDoctorFeedbacks()
+    public function getDoctorFeedbacks(Request $request)
     {
         $user = Auth::user();
 
@@ -143,18 +143,22 @@ class FeedbackController extends Controller
                 'message' => 'Unauthorized. Only doctors can view this.'
             ], 403);
         }
+        $perPage = $request->input('per_page', 10);
 
         // جلب الفيدباكس الخاصة بالطبيب مع اسم المريض فقط (لأجل الأمان وتوفير الأداء)
         $feedbacks = Feedback::where('doctor_id', $user->doctor->id)
             ->with('user:id,full_name')
             ->latest()
-            ->get();
+            ->paginate($perPage);
 
         // تحويل البيانات لترجع بس الاسم والكومنت
-        $transformedFeedbacks = $feedbacks->map(function ($item) {
-            return [
-                'patient_name' => $item->is_anonymous ? 'Anonymous Patient' : $item->user->full_name,
+        $transformedFeedbacks = $feedbacks->through(function ($item) {
+           return [
+                'feedback_id'  => $item->id,
+                'patient_name' => $item->is_anonymous ? 'Anonymous Patient' : ($item->user ? $item->user->full_name : 'Patient'),
                 'comment'      => $item->comment,
+                'is_anonymous' => (bool)$item->is_anonymous,
+                'created_at'   => $item->created_at ? $item->created_at->toDateTimeString() : null,
             ];
         });
 
@@ -164,7 +168,7 @@ class FeedbackController extends Controller
         ]);
     }
 
-    public function getPatientFeedbacks()
+    public function getPatientFeedbacks(Request $request)
     {
         $user = Auth::user();
 
@@ -175,15 +179,16 @@ class FeedbackController extends Controller
                 'message' => 'Unauthorized. Only patients can view their feedback history.'
             ], 403);
         }
+        $perPage = $request->input('per_page', 10);
 
         // جلب الفيدباكس الخاصة بهذا المريض المحدد فقط بناءً على الـ ID تبعه
         $feedbacks = Feedback::where('user_id', $user->id)
             ->with('doctor.user:id,full_name')
             ->latest()
-            ->get();
+            ->paginate($perPage);
 
         // تحويل وتنسيق البيانات
-        $transformedFeedbacks = $feedbacks->map(function ($item) {
+        $transformedFeedbacks = $feedbacks->through(function ($item) {
             return [
                 'feedback_id' => $item->id,
                 'doctor_name' => $item->doctor && $item->doctor->user ? $item->doctor->user->full_name : 'Unknown Doctor',
@@ -227,6 +232,29 @@ class FeedbackController extends Controller
                 'is_anonymous' => (bool)$feedback->is_anonymous,
                 'created_at'   => $feedback->created_at->toDateTimeString(),
             ]
+        ]);
+    }
+    public function getFeedbacksForDoctor(Request $request,$doctorId)
+    {
+        $perPage = $request->input('per_page', 10);
+        $feedbacks = Feedback::where('doctor_id', $doctorId)
+            ->with('user:id,full_name')
+            ->latest()
+            ->paginate($perPage);
+
+        $transformedFeedbacks = $feedbacks->through(function ($item) {
+            return [
+                'feedback_id'  => $item->id,
+                'patient_name' => $item->is_anonymous ? 'Anonymous Patient' : ($item->user ? $item->user->full_name : 'Patient'),
+                'comment'      => $item->comment,
+                'is_anonymous' => (bool)$item->is_anonymous,
+                'created_at'   => $item->created_at ? $item->created_at->toDateTimeString() : null,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $transformedFeedbacks
         ]);
     }
 }

@@ -144,7 +144,7 @@ class MedicalRecordController extends Controller
         ], 200);
     }
 
-    public function getPatientHistory($patient_id)
+    public function getPatientHistory(Request $request,$patient_id)
     {
         $user = Auth::user();
 
@@ -167,12 +167,12 @@ class MedicalRecordController extends Controller
                 'message' => 'Unauthorized access.'
             ], 403);
         }
-
+        $perPage = $request->input('per_page', 10);
         $records = MedicalRecord::with(['doctor.user'])
             ->where('patient_id', $patient_id)
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($record) {
+            ->paginate($perPage)
+            ->through(function ($record) {
                 $data = $record->toArray();
                 $data['doctor_name'] = optional(optional($record->doctor)->user)->full_name ?? 'Unknown Doctor';
                 $data['specialization'] = optional($record->doctor)->doctor_specialization;
@@ -187,7 +187,7 @@ class MedicalRecordController extends Controller
         ], 200);
     }
 
-    public function getDoctorMedicalRecords($doctor_id)
+    public function getDoctorMedicalRecords(Request $request,$doctor_id)
     {
         $user = Auth::user();
 
@@ -204,14 +204,14 @@ class MedicalRecordController extends Controller
                 'message' => 'Unauthorized. You can only view your own medical history.'
             ], 403);
         }
-
+        $perPage = $request->input('per_page', 10);
         $doctorId = $user->doctor->id;
 
         $medicalRecords = MedicalRecord::with(['patient.user'])
             ->where('doctor_id', $doctorId)
             ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($record) {
+            ->paginate($perPage)
+            ->through(function ($record) {
                 $data = $record->toArray();
 
                 $patient = $record->patient;

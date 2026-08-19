@@ -60,6 +60,6 @@ class User extends Authenticatable
 
     //many to many
     public function favoriteDoctors(){
-        return $this->belongsToMany(Doctor::class,'favorites');
+        return $this->belongsToMany(Doctor::class,'favorits');
     }
 }

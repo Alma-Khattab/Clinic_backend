@@ -16,6 +16,7 @@ class Appointment extends Model
         'appointment_date',
         'appointment_time',
         'status',
+        'is_free',
         'reminder_sent',
     ];
 

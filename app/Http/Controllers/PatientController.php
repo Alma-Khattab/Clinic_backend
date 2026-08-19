@@ -154,19 +154,20 @@ class PatientController extends Controller
             ], 500);
         }
     }
-    public function getMissedAppointments()
+    public function getMissedAppointments(Request $request)
     {
         $user = Auth::user();
         if (!$user) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
+        $perPage = $request->input('per_page', 10);
 
         $appointments = \App\Models\Appointment::with(['doctor.user'])
             ->where('user_id', $user->id)
             ->where('status', 'missed')
             ->orderBy('appointment_date', 'desc')
-            ->get()
-            ->map(function ($appointment) {
+            ->paginate($perPage)
+            ->through(function ($appointment) {
                 return [
                     'id' => $appointment->id,
                     'appointment_date' => $appointment->appointment_date,
