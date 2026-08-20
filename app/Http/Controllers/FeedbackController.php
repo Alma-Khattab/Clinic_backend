@@ -153,7 +153,8 @@ class FeedbackController extends Controller
 
         // تحويل البيانات لترجع بس الاسم والكومنت
         $transformedFeedbacks = $feedbacks->through(function ($item) {
-           return [
+          
+return [
                 'feedback_id'  => $item->id,
                 'patient_name' => $item->is_anonymous ? 'Anonymous Patient' : ($item->user ? $item->user->full_name : 'Patient'),
                 'comment'      => $item->comment,

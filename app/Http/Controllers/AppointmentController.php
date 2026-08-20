@@ -183,7 +183,7 @@ class AppointmentController extends Controller
             $firebase->sendNotification(
                 $patientUser->fcm_token,
                 'Appointment Confirmed',
-                "Your appointment has been booked successfully.\n\n⚠️ Important Note: Please attend on time. Missing 3 scheduled appointments will result in an automatic block from booking future appointments.", //"تم حجز موعدك بنجاح! ⚠️ يرجى الانتباه: عدم الحضور لـ 3 مواعيد يتسبب في حظر الحساب تلقائياً."
+                "Your appointment with {$doctorUser->full_name} is confirmed for {$appointment->appointment_date} at {$appointment->appointment_time}.\n\n⚠️ Important Note: Please attend on time. Missing 3 scheduled appointments will result in an automatic block from booking future appointments.", //تم حجز موعدك بنجاح! ⚠️ يرجى الانتباه: عدم الحضور لـ 3 مواعيد يتسبب في حظر الحساب تلقائياً.
                 [
                     'type' => 'appointment',
                     'id' => (string)$appointment->id,
@@ -196,7 +196,7 @@ class AppointmentController extends Controller
             $firebase->sendNotification(
                 $doctorUser->fcm_token,
                 'New Appointment',
-                'You have a new appointment booking.',
+                "You have a new appointment with {$patientUser->full_name} on {$appointment->appointment_date} at {$appointment->appointment_time}",
                 [
                         'type'=>'appointment',
                         'id'=>(string)$appointment->id,
@@ -478,11 +478,7 @@ class AppointmentController extends Controller
                 [
                     'type'=>'appointment',
                     'id'=>(string)$appointment->id,
-                    [
-                            'type' => 'appointment',
-                            'id' => (string)$appointment->id,
-                            'user_id' => $appointment->user_id // ✅ تمت إضافة هذا السطر
-                        ]
+                    'user_id' => $appointment->user_id // ✅ تمت إضافة هذا السطر
                 ]
             );
         }
@@ -541,7 +537,7 @@ class AppointmentController extends Controller
                     [
                         'type'=>'appointment',
                         'id'=>(string)$appointment->id,
-                             'user_id' => $user->id // ✅ تمت الإضافة
+                        'user_id' => $user->id // ✅ تمت الإضافة
                     ]
                 );
             }

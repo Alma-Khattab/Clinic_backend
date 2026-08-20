@@ -252,4 +252,18 @@ class UserController extends Controller
             return response()->json(['message' => 'Failed to update email.'], 500);
         }
     }
+    public function checkUserStatus($email)
+    {
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+        return response()->json([
+            'success' => true,
+            'status' => $user->status
+        ]);
+    }
 }

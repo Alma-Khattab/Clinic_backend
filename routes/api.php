@@ -25,12 +25,16 @@ use Illuminate\Support\Facades\Route;
 // Auth / User Routes
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
+Route::get('/user/status/{email}', [UserController::class, 'checkUserStatus']);
 
 // OTP & Password Reset
 Route::post('/verifyotp', [AuthController::class, 'verifyOtp']);
 Route::post('/forgotpassword', [AuthController::class, 'forgotPassword']);
 Route::post('/resetpassword', [AuthController::class, 'resetPassword']);
 Route::post('/resendotp', [AuthController::class, 'resendOtp']);
+Route::get('/storage-bypass/{folder}/{filename}', [PatientController::class, 'serveStorageFile']);
+
+
 
 
 /*
@@ -115,6 +119,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/update/{id}', [DoctorController::class, 'updateProfile']);
         Route::delete('/delete/{id}', [DoctorController::class, 'destroyProfile']);
     });
+
+
 
     // Doctor General Endpoints
     Route::get('/doctor/my-appointments/{date}', [DoctorController::class, 'getDoctorUpcomingAppointments']);

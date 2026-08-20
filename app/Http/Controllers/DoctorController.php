@@ -177,7 +177,10 @@ class DoctorController extends Controller
     public function getDoctorsBySpecialization(Request $request,$specialization)
     {
         $perPage = $request->input('per_page', 10);
-        $doctors = Doctor::with(['user', 'shift'])->where('doctor_specialization', $specialization)->paginate($perPage); 
+        $doctors = Doctor::with(['user', 'shift'])
+            ->completedAndScheduled()
+            ->where('doctor_specialization', $specialization)
+            ->get();
 
         if ($doctors->isEmpty()) {
             return response()->json(['message' => 'There are currently no doctors in this specialty.'], 404);
@@ -195,7 +198,9 @@ class DoctorController extends Controller
             'search' => 'required|string'
         ]);
 
-        $doctors = Doctor::with(['user', 'shift'])->whereHas('user', function ($query) use ($request) {
+       $doctors = Doctor::with(['user', 'shift'])
+            ->completedAndScheduled()
+            ->whereHas('user', function ($query) use ($request) {
             $query->where('full_name', 'like', '%' . $request->search . '%');
         })->get();
 
@@ -218,11 +223,9 @@ class DoctorController extends Controller
 
         $user = Auth::user();
 
-        if (!$user) {
-            return response()->json(['error' => 'User not authenticated'], 401);
-        }
 
-        if ($user->role !== 'patient' && $doctor->user_id != $user->id) {
+
+        if ($user && $user->role !== 'patient' && $doctor->user_id != $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => "You do not have the authorization to view this profile."
@@ -267,6 +270,7 @@ class DoctorController extends Controller
     public function getRandomDoctors()
     {
         $randomDoctors = Doctor::with(['user', 'shift'])
+            ->completedAndScheduled()
             ->inRandomOrder()
             ->limit(5)
             ->get();
@@ -310,4 +314,5 @@ class DoctorController extends Controller
             ]
         ], 200);
     }
+    
 }

@@ -72,4 +72,15 @@ class Doctor extends Model
     {
         return $this->hasMany(MedicalRecord::class);
     }
+    public function scopeCompletedAndScheduled($query)
+    {
+        return $query->whereNotNull('working_days')
+            ->whereNotNull('shift_id')
+            ->whereNotNull('personal_image')
+            ->whereNotNull('document_image')
+            ->whereNotNull('doctor_specialization')
+            ->whereNotNull('bio')
+            ->whereNotNull('years_of_experience')
+            ->whereNotNull('phone_number');
+    }
 }

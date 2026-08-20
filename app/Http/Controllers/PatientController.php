@@ -182,4 +182,12 @@ class PatientController extends Controller
             'appointments' => $appointments
         ], 200);
     }
+    public function serveStorageFile($folder, $filename)
+    {
+        $path = storage_path('app/public/' . $folder . '/' . $filename);
+        if (!file_exists($path)) {
+            abort(404);
+        }
+        return response()->file($path);
+    }
 }

@@ -52,11 +52,15 @@ class FavoriteController extends Controller
             'message' => 'Doctor removed from favorite'
         ], 200);
     }
-    public function getAllFavorites()
+   public function getAllFavorites()
     {
         $user = Auth::user();
+        $doctors = $user->favoriteDoctors()
+            ->completedAndScheduled()
+            ->with(['user', 'shift'])
+            ->get();
         return response()->json([
-            'favorite Doctors' => $user->favoriteDoctors
+            'favorite Doctors' => $doctors
         ], 200);
     }
 }
