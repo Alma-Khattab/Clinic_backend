@@ -186,7 +186,8 @@ class AppointmentController extends Controller
                 "Your appointment has been booked successfully.\n\n⚠️ Important Note: Please attend on time. Missing 3 scheduled appointments will result in an automatic block from booking future appointments.", //"تم حجز موعدك بنجاح! ⚠️ يرجى الانتباه: عدم الحضور لـ 3 مواعيد يتسبب في حظر الحساب تلقائياً."
                 [
                     'type' => 'appointment',
-                    'id' => (string)$appointment->id
+                    'id' => (string)$appointment->id,
+                    'user_id' => $patientUser->id  // 👈 إضافة هذا السطر ضرورية جداً
                 ]
             );
         }
@@ -198,7 +199,8 @@ class AppointmentController extends Controller
                 'You have a new appointment booking.',
                 [
                         'type'=>'appointment',
-                        'id'=>(string)$appointment->id
+                        'id'=>(string)$appointment->id,
+                        'user_id' => $doctorUser->id
                     ]
             );
         }
@@ -262,7 +264,12 @@ class AppointmentController extends Controller
                     $firebase->sendNotification(
                         $patientUser->fcm_token,
                         'Account Blocked',
-                        'You have been blocked from booking new appointments due to missing 3 appointments, and all your upcoming appointments have been cancelled.'
+                        'You have been blocked from booking new appointments due to missing 3 appointments, and all your upcoming appointments have been cancelled.',
+                        [
+                            'type' => 'appointment',
+                            'id' => (string)$appointment->id,
+                            'user_id' => $patientUser->id // ✅ تمت إضافة المصفوفة كاملة هنا
+                        ]
                     );
                 }
                 // تسجيل تحذير في الـ Log عند حظر المريض
@@ -470,7 +477,12 @@ class AppointmentController extends Controller
                 'تم اكمال الموعد  بنجاح نتمنى لكم دوام الصحة',
                 [
                     'type'=>'appointment',
-                    'id'=>(string)$appointment->id
+                    'id'=>(string)$appointment->id,
+                    [
+                            'type' => 'appointment',
+                            'id' => (string)$appointment->id,
+                            'user_id' => $appointment->user_id // ✅ تمت إضافة هذا السطر
+                        ]
                 ]
             );
         }
@@ -528,7 +540,8 @@ class AppointmentController extends Controller
                     'Your appointment has been cancelled successfully.',
                     [
                         'type'=>'appointment',
-                        'id'=>(string)$appointment->id
+                        'id'=>(string)$appointment->id,
+                             'user_id' => $user->id // ✅ تمت الإضافة
                     ]
                 );
             }
@@ -539,7 +552,8 @@ class AppointmentController extends Controller
                     'The patient has cancelled the appointment.',
                     [
                         'type'=>'appointment',
-                        'id'=>(string)$appointment->id
+                        'id'=>(string)$appointment->id,
+                        'user_id' => $doctorUser->id // ✅ تمت الإضافة
                     ]
                 );
             }
@@ -558,7 +572,8 @@ class AppointmentController extends Controller
                     'Appointment has been cancelled successfully.',
                     [
                         'type'=>'appointment',
-                        'id'=>(string)$appointment->id
+                        'id'=>(string)$appointment->id,
+                        'user_id' => $user->id // ✅ تمت الإضافة
                     ]
                 );
             }
@@ -569,7 +584,8 @@ class AppointmentController extends Controller
                     'The doctor has cancelled your appointment.',
                     [
                         'type'=>'appointment',
-                        'id'=>(string)$appointment->id
+                        'id'=>(string)$appointment->id,
+                        'user_id' => $patientUser->id // ✅ تمت الإضافة
                     ]
                 );
             }
@@ -713,7 +729,8 @@ class AppointmentController extends Controller
                 'Your appointment has been changed successfully.',
                 [
                         'type'=>'appointment',
-                        'id'=>(string)$appointment->id
+                        'id'=>(string)$appointment->id,
+                        'user_id' => $patientUser->id // ✅ تمت الإضافة
                     ]
             );
         }
@@ -725,7 +742,8 @@ class AppointmentController extends Controller
                 'A patient has changed an appointment time.',
                 [
                         'type'=>'appointment',
-                        'id'=>(string)$appointment->id
+                        'id'=>(string)$appointment->id,
+                        'user_id' => $doctorUser->id // ✅ تمت الإضافة
                     ]
             );
         }

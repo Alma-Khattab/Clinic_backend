@@ -30,7 +30,7 @@ class NotificationController extends Controller
     public function markAsRead($id)
     {
         $notification = Notification::where('id', $id)
-            ->where('user_id', Auth::user())
+            ->where('user_id', Auth::id()) 
             ->first();
 
         if ($notification) {

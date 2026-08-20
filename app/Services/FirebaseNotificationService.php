@@ -16,6 +16,20 @@ class FirebaseNotificationService
         $body,
         array $data = []
     ) {
+        // 0. حفظ الإشعار في قاعدة البيانات أولاً لضمان ظهوره في صفحة التطبيق دائماً
+        try {
+            DatabaseNotification::create([
+                'user_id'   => $data['user_id'] ?? null,
+                'title'     => $title,
+                'body'      => $body,
+                'type'      => $data['type'] ?? null,
+                'target_id' => $data['id'] ?? null,
+                'is_read'   => false,
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Failed to save notification to DB", ['error' => $e->getMessage()]);
+        }
+
         // 1. التحقق من وجود التوكن وتسجيل التحذير في حال عدم وجوده
         if (empty($token)) {
             Log::warning("Firebase Notification Skipped: No FCM Token provided.", [
@@ -46,16 +60,6 @@ class FirebaseNotificationService
 
             // 4. إرسال الإشعار
             $messaging->send($messageBuilder);
-
-            // 5. حفظ الإشعار في قاعدة البيانات
-            DatabaseNotification::create([
-                'user_id'   => $data['user_id'] ?? null,
-                'title'     => $title,
-                'body'      => $body,
-                'type'      => $data['type'] ?? null,
-                'target_id' => $data['id'] ?? null,
-                'is_read'   => false,
-            ]);
 
             // 6. تسجيل نجاح الإرسال في ملف الـ Log
             Log::info("Firebase Notification Sent Successfully", [
